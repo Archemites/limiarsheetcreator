@@ -2,7 +2,13 @@
 <html lang="pt-BR" class="crt-on" data-mod="base">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="assets/icone-180.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="LIMIAR">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <title>LIMIAR — Criador de Fichas</title>
   <meta name="description" content="Criador de fichas de Perito para o RPG LIMIAR (Livro do Jogador, 1ª Edição) com a extensão Em um Passado Distante. Exporta a ficha em PDF.">
   <meta name="theme-color" content="#07080e">
@@ -66,6 +72,7 @@
   </footer>
 
   <div class="crt-overlay" aria-hidden="true"><div class="crt-roll"></div></div>
+  <button type="button" class="topo-voltar" data-act="topo" data-fk="topo" aria-label="Voltar ao topo">&#9650;</button>
   <div id="gaveta-root"></div>
   <div id="modal-root"></div>
   <div id="toast-root" class="toasts" aria-live="polite"></div>

@@ -1,0 +1,17 @@
+{
+  "name": "LIMIAR — Criador de Fichas",
+  "short_name": "LIMIAR",
+  "description": "Criador de fichas de Perito para o RPG LIMIAR (1ª Edição + Em um Passado Distante).",
+  "lang": "pt-BR",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#07080e",
+  "theme_color": "#07080e",
+  "icons": [
+    { "src": "assets/icone-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icone-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

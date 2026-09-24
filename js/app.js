@@ -14,7 +14,8 @@
 
   const defaultPrefs = () => ({
     crt: true, boot: true, pdfTema: 'escuro', pdfPapel: 'a4',
-    pdfPartes: { ficha: true, equip: true, caminhos: true, revel: true, historia: true, ref: true }
+    pdfPartes: { ficha: true, equip: true, caminhos: true, revel: true, historia: true, ref: true },
+    recolhidas: [] // janelas recolhidas no celular ("aba:título")
   });
 
   const App = (L.App = {
@@ -224,6 +225,8 @@
     cabecalho();
     $('#hud').innerHTML = UI.hud(App);
     $('#tabs').innerHTML = UI.tabs(App);
+    UI.abaAtual = App.ui.tab;
+    UI.recolhidas = new Set(App.store.prefs.recolhidas || []);
     $('#view').innerHTML = UI.view(App);
     if (App.ui.tab === 'mapa' && L.Mapa) L.Mapa.montar($('#mapa-root'), App);
     renderModal();
@@ -297,6 +300,7 @@
     if (o.cor) el.style.setProperty('--c', `var(--${o.cor})`);
     const num = o.num != null ? `<span class="tn">${UI.esc(o.num)}</span>` : '';
     const undo = o.undo ? `<button type="button" class="btn btn-s" data-act="desfazer">Desfazer</button>` : '';
+    el.addEventListener('click', ev => { if (!ev.target.closest('button') && el.parentNode) el.parentNode.removeChild(el); }); // tocar no aviso fecha
     el.innerHTML = `${num}<div><span class="tt">${UI.esc(msg)}</span>${o.det ? `<span class="td">${UI.esc(o.det)}</span>` : ''}</div>${undo}`;
     if (o.undo) App.undo = o.undo;
     root.appendChild(el);
@@ -597,6 +601,16 @@
       A.tab(lista[(i + toInt(passo) + lista.length) % lista.length].id);
     },
     gaveta() { if (App.ui.gaveta) fecharGaveta(true); else abrirGaveta(); },
+    'win-toggle'(chave) { // celular: recolhe/expande a janela e lembra
+      if (!UI.mobile() || !chave) return;
+      const k = App.ui.tab + ':' + chave;
+      const lista = new Set(App.store.prefs.recolhidas || []);
+      if (lista.has(k)) lista.delete(k); else lista.add(k);
+      App.store.prefs.recolhidas = [...lista];
+      salvar(true);
+      render();
+    },
+    topo() { window.scrollTo({ top: 0, behavior: reduzMovimento ? 'auto' : 'smooth' }); const b = $('.logo-topo'); if (b && b.offsetParent) b.focus({ preventScroll: true }); },
     'gaveta-fechar'() { fecharGaveta(true); },
     'gaveta-fechar-fundo'() { fecharGaveta(true); },
     async 'pdf-compartilhar'() {
@@ -1481,6 +1495,49 @@
     }
   }
 
+  /* ------------------------------------------------------------------ */
+  /* CELULAR: deslizar entre abas e botão de voltar ao topo             */
+  /* ------------------------------------------------------------------ */
+  function ligarGestosCelular() {
+    let toque = null;
+    const ignorar = alvo => !alvo.closest('#view') ||
+      alvo.closest('input, textarea, select, .mapa, .path-tabs, .trail-tabs, .cat-tabs, [data-sem-deslize]') ||
+      (() => { const w = alvo.closest('.tbl-wrap'); return !!w && w.scrollWidth > w.clientWidth + 2; })();
+    document.addEventListener('touchstart', e => {
+      toque = null;
+      if (!UI.mobile() || App.ui.modal || App.ui.gaveta || App.ui.tab === 'mapa' || e.touches.length !== 1) return;
+      const t = e.touches[0];
+      if (t.clientX < 24 || t.clientX > window.innerWidth - 24) return; // bordas: gesto de voltar do sistema
+      if (ignorar(e.target)) return;
+      toque = { x: t.clientX, y: t.clientY, t: Date.now() };
+    }, { passive: true });
+    document.addEventListener('touchend', e => {
+      if (!toque) return;
+      const t = e.changedTouches[0];
+      const dx = t.clientX - toque.x, dy = t.clientY - toque.y, dt = Date.now() - toque.t;
+      toque = null;
+      if (dt > 700 || Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 2.2) return;
+      if (window.getSelection && String(window.getSelection()).trim()) return; // estava selecionando texto
+      const passo = dx < 0 ? 1 : -1;
+      A['tab-rel'](passo);
+      const v = $('#view');
+      if (v && !reduzMovimento) {
+        v.classList.remove('entra-dir', 'entra-esq');
+        void v.offsetWidth;
+        v.classList.add(passo > 0 ? 'entra-dir' : 'entra-esq');
+        setTimeout(() => v.classList.remove('entra-dir', 'entra-esq'), 260);
+      }
+    }, { passive: true });
+    document.addEventListener('touchcancel', () => { toque = null; }, { passive: true });
+    // botão "voltar ao topo" aparece depois de rolar bastante
+    let pedido = false;
+    const aoRolar = () => {
+      pedido = false;
+      document.documentElement.classList.toggle('rolou', window.scrollY > window.innerHeight * 1.2);
+    };
+    window.addEventListener('scroll', () => { if (!pedido) { pedido = true; requestAnimationFrame(aoRolar); } }, { passive: true });
+  }
+
   function trocarModulo(mod) {
     if (mod !== 'base' && mod !== 'passado') return;
     if (mod === App.c.modulo) return;
@@ -1581,6 +1638,7 @@
       const trocou = () => { render(); };
       if (mq.addEventListener) mq.addEventListener('change', trocou); else if (mq.addListener) mq.addListener(trocou);
     }
+    ligarGestosCelular();
     document.addEventListener('toggle', e => {
       const el = e.target;
       if (el && el.dataset && el.dataset.openKey) {

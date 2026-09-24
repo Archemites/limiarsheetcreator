@@ -5,3 +5,6 @@ node_modules/
 
 # PDFs do livro (referência local, não vão para o repositório público)
 /*.pdf
+
+# prints e PDFs gerados pelos testes
+tests/saida/

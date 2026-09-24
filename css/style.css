@@ -159,7 +159,8 @@ main#view { padding-top: 10px; outline: none; }
 .g3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .g-main { grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); }
 .span-all { grid-column: 1 / -1; }
-.stack { display: flex; flex-direction: column; align-items: flex-start; }
+.stack { display: flex; flex-direction: column; }
+.stack > .chk, .stack > .lbl { align-self: flex-start; }
 .stack > * + * { margin-top: 10px; }
 .row { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
 .row-b { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: flex-end; }
@@ -244,7 +245,9 @@ input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-o
 .tbl-wrap { overflow-x: auto; }
 
 /* ---------- PERITO ---------- */
-.id-grid { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 16px; }
+.id-grid { display: grid; grid-template-columns: 170px minmax(0, 1fr); grid-template-areas: "ret campos" "ret info"; gap: 16px 16px; align-items: start; }
+.id-grid .portrait { grid-area: ret; } .id-campos { grid-area: campos; } .id-info { grid-area: info; gap: 4px; }
+.id-info > * + * { margin-top: 4px; }
 .portrait { display: flex; flex-direction: column; gap: 6px; }
 .portrait-frame { position: relative; aspect-ratio: 4 / 5; border: 1px solid var(--line-2); background:
   repeating-linear-gradient(45deg, rgba(92,141,255,.07) 0 6px, transparent 6px 12px), var(--field); display: grid; place-items: center; overflow: hidden; }
@@ -304,6 +307,12 @@ input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-o
 .part-hp small { font-size: 1.1rem; color: var(--dim); }
 .part-meta { font-size: 1rem; color: var(--dim); display: flex; flex-wrap: wrap; gap: 2px 10px; }
 .part-meta .arm { color: var(--psi); }
+.part .pn-c { display: none; }
+/* grade de dificuldades (DF → número mínimo no d20) */
+.df-grade { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 3px; }
+.df-cel { display: flex; flex-direction: column; align-items: center; padding: 4px 2px; border: 1px solid color-mix(in srgb, var(--yel) 35%, transparent); background: color-mix(in srgb, var(--yel) 6%, transparent); }
+.df-cel span { font-size: .8rem; color: var(--dim); letter-spacing: .04em; white-space: nowrap; }
+.df-cel b { font-weight: 400; font-size: 1.35rem; line-height: 1.1; color: var(--yel); }
 .death { margin-top: 12px; padding: 8px 12px; background: var(--vig); color: var(--ink); font-size: 1.4rem; text-shadow: none; letter-spacing: .06em; }
 .formula { font-size: 1.3rem; }
 .formula .op { color: var(--mute); padding: 0 4px; }
@@ -658,8 +667,7 @@ html.gaveta-aberta { overflow: hidden; }
   html:not(.embutido) .attr-tbl .step input { width: 32px !important; padding: 3px 2px; }
   html:not(.embutido) .attr-tbl .step .sv { min-width: 30px; padding: 0 2px; font-size: 1.2rem; }
 
-  /* retrato menor na aba Perito */
-  html:not(.embutido) .portrait { max-width: 150px; }
+
 
   /* lista de profissões/classes recolhida depois da escolha */
   html:not(.embutido) .troca-origem > summary { cursor: pointer; padding: 10px 12px; border: 1px dashed var(--line-2); color: var(--accent); letter-spacing: .06em; font-size: 1.2rem; list-style: none; }
@@ -682,3 +690,95 @@ html.gaveta-aberta { overflow: hidden; }
   html:not(.embutido) .statusbar .fk { display: none; }
   html:not(.embutido) .statusbar { font-size: 1rem; }
 }
+
+/* ---------- Celular: layouts por aba (parecidos com o do computador) ---------- */
+@media (max-width: 760px) {
+  /* Perito: retrato maior à esquerda, campos à direita, informações embaixo */
+  html:not(.embutido) .id-grid { grid-template-columns: minmax(0, 11fr) minmax(0, 13fr); grid-template-areas: "ret campos" "info info"; gap: 12px; }
+  html:not(.embutido) .portrait { max-width: none; }
+  html:not(.embutido) .portrait .row { justify-content: center; }
+  html:not(.embutido) .id-g3 { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  html:not(.embutido) .id-campos > * + * { margin-top: 6px; }
+  html:not(.embutido) .id-campos .in-big { font-size: 1.5rem; }
+  html:not(.embutido) .id-info { border-top: 1px dashed var(--line); padding-top: 8px; }
+
+  /* Vida por membro: boneco 3×3 como no computador, cartões compactos */
+  html:not(.embutido) .doll { grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-areas: ". cabeca ." "bracoE tronco bracoD" "pernaE . pernaD"; gap: 6px; }
+  html:not(.embutido) .part { padding: 6px 6px 7px; gap: 4px; }
+  html:not(.embutido) .part .pn-l { display: none; }
+  html:not(.embutido) .part .pn-c { display: inline; }
+  html:not(.embutido) .part-h { flex-direction: column; align-items: flex-start; gap: 0; }
+  html:not(.embutido) .part-h b { font-size: 1.15rem; line-height: 1.1; }
+  html:not(.embutido) .part-f { font-size: .72rem; }
+  html:not(.embutido) .part-v { flex-direction: column; align-items: stretch; gap: 5px; }
+  html:not(.embutido) .part-hp { font-size: 1.7rem; text-align: center; }
+  html:not(.embutido) .part .step { width: 100%; }
+  html:not(.embutido) .part .step button { flex: 0 0 30px; width: 30px; }
+  html:not(.embutido) .part .step input { flex: 1 1 auto; width: auto !important; min-width: 0; padding: 3px 2px; }
+  html:not(.embutido) .part-meta { font-size: .8rem; gap: 0 6px; justify-content: center; }
+  html:not(.embutido) .part-meta .arm { display: none; }
+  html:not(.embutido) .part-a { flex-direction: column; align-items: stretch; gap: 4px; }
+  html:not(.embutido) .part-a .chk { font-size: .95rem; }
+  html:not(.embutido) .part-a .btn { justify-content: center; min-height: 32px; font-size: .95rem; }
+
+  /* Mente: cada nível vira um cartão com rótulos */
+  html:not(.embutido) .lvl-tbl, html:not(.embutido) .lvl-tbl tbody { display: block; }
+  html:not(.embutido) .lvl-tbl thead { display: none; }
+  html:not(.embutido) .lvl-tbl tr { display: grid; grid-template-columns: 42px minmax(0, 1fr) minmax(0, 1fr); gap: 6px 10px; padding: 8px 0; border-bottom: 1px dotted var(--line); align-items: end; }
+  html:not(.embutido) .lvl-tbl td { display: block; padding: 0; border: 0; }
+  html:not(.embutido) .lvl-tbl td::before { content: attr(data-label); display: block; margin-bottom: 2px; font-size: .72rem; letter-spacing: .1em; color: var(--mute); text-transform: uppercase; }
+  html:not(.embutido) .lvl-tbl td:first-child { grid-row: span 3; align-self: center; text-align: center; font-size: 1.7rem; }
+  html:not(.embutido) .lvl-tbl td:first-child::before { content: 'NV'; }
+  html:not(.embutido) .lvl-tbl select { width: 100%; }
+
+  /* Testes: grade de DF em 2 linhas de 5 */
+  html:not(.embutido) .df-grade { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+}
+/* ---------- Toque e acessibilidade (todas as larguras) ---------- */
+button, .btn, .chk, summary, [role="button"], a { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+html, body { overscroll-behavior-x: none; } /* deslizar troca de aba; não aciona o voltar do navegador */
+.hud-seg[role="button"] { cursor: pointer; }
+.hud-seg[role="button"]:hover, .hud-seg[role="button"]:focus-visible { background: color-mix(in srgb, var(--accent) 9%, transparent); outline: none; }
+.modal-x { position: absolute; top: 8px; right: 8px; z-index: 2; width: 36px; height: 36px; display: grid; place-items: center; padding: 0; background: var(--panel);
+  border: 1px solid var(--line-2); color: var(--dim); font: inherit; font-size: 1.6rem; line-height: 1; cursor: pointer; }
+.modal-x:hover, .modal-x:focus-visible { color: var(--ink); background: var(--c); border-color: var(--c); outline: none; text-shadow: none; }
+.topo-voltar { display: none; }
+.statusbar { padding-bottom: env(safe-area-inset-bottom, 0px); }
+@keyframes entra-dir { from { transform: translateX(28px); opacity: .35; } to { transform: none; opacity: 1; } }
+@keyframes entra-esq { from { transform: translateX(-28px); opacity: .35; } to { transform: none; opacity: 1; } }
+#view.entra-dir { animation: entra-dir .2s steps(4); }
+#view.entra-esq { animation: entra-esq .2s steps(4); }
+
+/* ---------- Celular: janelas recolhíveis, topo, leitura e toque ---------- */
+@media (max-width: 760px) {
+  html:not(.embutido) .win-tg { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; max-width: 100%; }
+  html:not(.embutido) .win-tg::after { content: '\25BE'; font-size: .8em; opacity: .85; }
+  html:not(.embutido) .win.recolhida .win-tg::after { content: '\25B8'; }
+  html:not(.embutido) .win-tg:focus-visible { outline: 2px dashed var(--ink); outline-offset: 2px; }
+  html:not(.embutido) .win.recolhida { padding-top: 14px; padding-bottom: 4px; opacity: .88; }
+  html:not(.embutido) .win.recolhida > .win-corpo, html:not(.embutido) .win.recolhida > .win-tools { display: none; }
+
+  html:not(.embutido) .topo-voltar { display: grid; place-items: center; position: fixed; right: 12px; bottom: calc(40px + env(safe-area-inset-bottom, 0px)); z-index: 790;
+    width: 46px; height: 46px; padding: 0; background: var(--panel); color: var(--accent); border: 2px solid var(--accent); font: inherit; font-size: 1.3rem; cursor: pointer;
+    box-shadow: 0 0 16px -4px var(--accent); opacity: 0; pointer-events: none; transform: translateY(10px); transition: opacity .15s, transform .15s; }
+  html.rolou:not(.embutido):not(.gaveta-aberta) .topo-voltar { opacity: 1; pointer-events: auto; transform: none; }
+
+  /* SAIR fica só na gaveta (na barra de baixo era fácil tocar sem querer) */
+  html:not(.embutido) #st-sair { display: none; }
+
+  /* leitura e toque */
+  html:not(.embutido) .tx { font-size: .86rem; }
+  html:not(.embutido) .tx-s { font-size: .8rem; }
+  html:not(.embutido) .note { font-size: .84rem; }
+  html:not(.embutido) .rules-mini li { font-size: 1.15rem; padding-top: 6px; padding-bottom: 6px; }
+  html:not(.embutido) .chk input { width: 24px; height: 24px; }
+  html:not(.embutido) .chk input:checked::after { width: 10px; height: 10px; }
+  html:not(.embutido) .btn:active, html:not(.embutido) .step button:active:not(:disabled) { background: color-mix(in srgb, var(--accent) 30%, transparent); }
+  html:not(.embutido) .modal { padding-top: 30px; }
+
+  /* área segura (entalhe e barra de gestos do iPhone) */
+  html:not(.embutido) .topbar { padding-top: calc(7px + env(safe-area-inset-top, 0px)); }
+  html:not(.embutido) .screen { padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px)); }
+  html:not(.embutido) .gaveta { padding-top: env(safe-area-inset-top, 0px); padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)); }
+}
+@media (prefers-reduced-motion: reduce) { #view.entra-dir, #view.entra-esq { animation: none; } .topo-voltar { transition: none; } }

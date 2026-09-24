@@ -26,7 +26,8 @@
   function inp(bind, value, o) {
     o = o || {};
     const num = o.t === 'int' || o.t === 'intn';
-    return `<input type="text"${num ? ' inputmode="numeric" autocomplete="off"' : ''} data-bind="${bind}"${o.t ? ` data-t="${o.t}"` : ''} value="${esc(value == null ? '' : value)}"${o.ph ? ` placeholder="${esc(o.ph)}"` : ''}${o.cls ? ` class="${o.cls}"` : ''}${o.aria ? ` aria-label="${esc(o.aria)}"` : ''}${o.max ? ` maxlength="${o.max}"` : ''}>`;
+    const neg = o.neg || /^(ajustes\.|vida\.|sanidade$)/.test(bind); // aceita negativo: teclado com "-"
+    return `<input type="text"${num ? (neg ? ' inputmode="text" autocomplete="off" enterkeyhint="done"' : ' inputmode="numeric" autocomplete="off" enterkeyhint="done"') : ''} data-bind="${bind}"${o.t ? ` data-t="${o.t}"` : ''} value="${esc(value == null ? '' : value)}"${o.ph ? ` placeholder="${esc(o.ph)}"` : ''}${o.cls ? ` class="${o.cls}"` : ''}${o.aria ? ` aria-label="${esc(o.aria)}"` : ''}${o.max ? ` maxlength="${o.max}"` : ''}>`;
   }
   function uiInp(key, value, o) {
     o = o || {};
@@ -70,7 +71,13 @@
   }
   const win = (title, color, body, o) => {
     o = o || {};
-    return `<section class="win c-${color} ${o.cls || ''}"${o.id ? ` id="${o.id}"` : ''}><h2 class="win-t">${title}</h2>${o.tools ? `<div class="win-tools">${o.tools}</div>` : ''}${body}</section>`;
+    const tools = o.tools ? `<div class="win-tools">${o.tools}</div>` : '';
+    if (UI.mobile()) { // no celular: tocar no título recolhe a janela (e o app lembra)
+      const chave = String(title).replace(/<[^>]+>/g, '').trim();
+      const fechada = !!(UI.recolhidas && UI.recolhidas.has(UI.abaAtual + ':' + chave));
+      return `<section class="win c-${color} ${o.cls || ''}${fechada ? ' recolhida' : ''}"${o.id ? ` id="${o.id}"` : ''}><h2 class="win-t"><button type="button" class="win-tg" data-act="win-toggle" data-a="${esc(chave)}" data-fk="win:${esc(chave)}" aria-expanded="${!fechada}">${title}</button></h2>${tools}<div class="win-corpo">${body}</div></section>`;
+    }
+    return `<section class="win c-${color} ${o.cls || ''}"${o.id ? ` id="${o.id}"` : ''}><h2 class="win-t">${title}</h2>${tools}${body}</section>`;
   };
   const bar = (p, color, o) => {
     o = o || {};
@@ -175,13 +182,13 @@
     const avs = d.avisos.filter(a => a.nivel === 'aviso').length;
     const totalAv = erros + avs;
     return `
-      <div class="hud-seg hud-id"><span class="hud-l">PERITO · ${esc(d.modulo.curto)}</span><span class="hud-name${nome ? '' : ' empty'}">${esc(nome || 'SEM NOME')}</span><span class="hud-org">${esc(org)}</span></div>
-      <div class="hud-seg hud-nv"><span class="hud-l">NÍVEL</span><span class="hud-v t-yel">${c.nivel}</span></div>
-      <div class="hud-seg hud-bar hud-con"><span class="hud-l">CONHECIMENTO</span><div class="bar-row">${bar(c.conhecimento, 'yel', { label: `Conhecimento ${c.conhecimento}%` })}<span class="t-yel">${c.conhecimento}%</span></div></div>
-      <div class="hud-seg hud-bar hud-san"><span class="hud-l">SANIDADE</span><div class="bar-row">${barSan(san, { label: `Sanidade ${sanTxt}` })}<span class="${san.atual != null && san.atual <= 0 ? 't-vig blink' : 't-raz'}">${sanTxt}</span></div></div>
-      <div class="hud-seg hud-bar hud-fol hide-s"><span class="hud-l">FÔLEGO</span><div class="bar-row">${bar(pct(fol.atual, fol.max), 'cyan', { label: `Fôlego ${fol.atual}/${fol.max}` })}<span class="t-cyan">${fol.atual}/${fol.max}</span></div></div>
-      <div class="hud-seg hud-def hide-s"><span class="hud-l">DEFESA</span><span class="hud-v t-psi">${d.defesa.base == null ? '—' : d.defesa.base + '%'}</span></div>
-      <div class="hud-seg hud-tr"><span class="hud-l">TRAÇOS</span><span class="hud-v ${d.tracos.disponiveis > 0 ? 't-eso blink' : d.tracos.disponiveis < 0 ? 't-vig' : 't-eso'}">${d.tracos.disponiveis}</span></div>
+      <div class="hud-seg hud-id" role="button" tabindex="0" data-act="tab" data-a="perito" data-fk="hud:perito" title="Abrir a aba Perito"><span class="hud-l">PERITO · ${esc(d.modulo.curto)}</span><span class="hud-name${nome ? '' : ' empty'}">${esc(nome || 'SEM NOME')}</span><span class="hud-org">${esc(org)}</span></div>
+      <div class="hud-seg hud-nv" role="button" tabindex="0" data-act="tab" data-a="mente" data-fk="hud:nv" title="Níveis: aba Mente"><span class="hud-l">NÍVEL</span><span class="hud-v t-yel">${c.nivel}</span></div>
+      <div class="hud-seg hud-bar hud-con" role="button" tabindex="0" data-act="tab" data-a="mente" data-fk="hud:con" title="Conhecimento: aba Mente"><span class="hud-l">CONHECIMENTO</span><div class="bar-row">${bar(c.conhecimento, 'yel', { label: `Conhecimento ${c.conhecimento}%` })}<span class="t-yel">${c.conhecimento}%</span></div></div>
+      <div class="hud-seg hud-bar hud-san" role="button" tabindex="0" data-act="tab" data-a="mente" data-fk="hud:san" title="Sanidade: aba Mente"><span class="hud-l">SANIDADE</span><div class="bar-row">${barSan(san, { label: `Sanidade ${sanTxt}` })}<span class="${san.atual != null && san.atual <= 0 ? 't-vig blink' : 't-raz'}">${sanTxt}</span></div></div>
+      <div class="hud-seg hud-bar hud-fol hide-s" role="button" tabindex="0" data-act="tab" data-a="corpo" data-fk="hud:fol" title="Fôlego: aba Corpo"><span class="hud-l">FÔLEGO</span><div class="bar-row">${bar(pct(fol.atual, fol.max), 'cyan', { label: `Fôlego ${fol.atual}/${fol.max}` })}<span class="t-cyan">${fol.atual}/${fol.max}</span></div></div>
+      <div class="hud-seg hud-def hide-s" role="button" tabindex="0" data-act="tab" data-a="corpo" data-fk="hud:def" title="Defesa: aba Corpo"><span class="hud-l">DEFESA</span><span class="hud-v t-psi">${d.defesa.base == null ? '—' : d.defesa.base + '%'}</span></div>
+      <div class="hud-seg hud-tr" role="button" tabindex="0" data-act="tab" data-a="caminhos" data-fk="hud:tr" title="Traços: aba Caminhos"><span class="hud-l">TRAÇOS</span><span class="hud-v ${d.tracos.disponiveis > 0 ? 't-eso blink' : d.tracos.disponiveis < 0 ? 't-vig' : 't-eso'}">${d.tracos.disponiveis}</span></div>
       <div class="hud-seg hud-check hide-s"><span class="hud-l" style="margin-right:4px">MONTAGEM</span>${d.checklist.map(ck => `<button type="button" class="ck${ck.ok ? ' ok' : ''}" data-act="tab" data-a="${ck.tab}" data-fk="hudck:${ck.id}" title="${esc(`${ck.letra}. ${ck.txt}${!ck.ok && ck.det ? ' — ' + ck.det : ''}`)}">${ck.letra}</button>`).join('')}</div>
       <button type="button" class="hud-warn ${erros ? 'err' : totalAv ? '' : 'ok'}" data-act="avisos" data-fk="avisos" title="Pendências e avisos da ficha">${totalAv ? `! ${totalAv} ${totalAv === 1 ? 'AVISO' : 'AVISOS'}` : 'OK'}</button>`;
   };
@@ -206,10 +213,12 @@
           <div class="row">${btn(c.retrato ? 'Trocar' : 'Enviar retrato', 'retrato-up', { cls: 'btn-s' })}${c.retrato ? btn('Remover', 'retrato-del', { cls: 'btn-s btn-x' }) : ''}</div>
           ${c.retrato ? chk('retratoRetro', c.retratoRetro, 'Filtro EGA (16 cores, mais pixelado)') : ''}
         </div>
-        <div class="stack">
+        <div class="stack id-campos">
           ${fld('Nome do Perito', 'nome', c.nome, { cls: 'in-big', ph: 'Nome do Perito', max: 80 })}
-          <div class="grid g3">${fld('Jogador', 'jogador', c.jogador, { max: 60 })}${fld('Idade', 'idade', c.idade, { max: 20 })}${fld('Origem', 'origem', c.origem, { ph: c.modulo === 'passado' ? 'Reino, cidade…' : 'Cidade, país…', max: 80 })}</div>
-          <div class="row mt">
+          <div class="grid g3 id-g3">${fld('Jogador', 'jogador', c.jogador, { max: 60 })}${fld('Idade', 'idade', c.idade, { max: 20 })}${fld('Origem', 'origem', c.origem, { ph: c.modulo === 'passado' ? 'Reino, cidade…' : 'Cidade, país…', max: 80 })}</div>
+        </div>
+        <div class="stack id-info">
+          <div class="row">
             <span class="lbl">${esc(d.termo)}</span><span class="val t-acc">${esc(d.origem ? d.origem.nome : '—')}</span>${btn(d.origemEscolhida ? 'Alterar' : 'Escolher', 'tab', { a: 'origem', cls: 'btn-s' })}
           </div>
           <div class="row">
@@ -296,8 +305,7 @@
         <li><em>Vantagem</em>: rola 2 dados e fica com o melhor · <em>Desvantagem</em>: fica com o pior.</li>
         <li><em>Porcentagem</em>: 1d100 abaixo da chance = sucesso; 1 = crítico; 100 = falha crítica.</li>
       </ul>
-      <div class="tbl-wrap mt"><table class="tbl c-yel"><thead><tr><th>DF</th>${D.DIFICULDADES.map(x => `<th class="num">${x.df}</th>`).join('')}</tr></thead>
-      <tbody><tr><td class="t-dim">Mínimo</td>${D.DIFICULDADES.map(x => `<td class="num">${x.min}</td>`).join('')}</tr></tbody></table></div>`);
+      <div class="df-grade mt" role="table" aria-label="Dificuldade e número mínimo no d20">${D.DIFICULDADES.map(x => `<div class="df-cel" role="row"><span role="cell">DF ${x.df}</span><b role="cell" aria-label="mínimo ${x.min}">${x.min}</b></div>`).join('')}</div>`);
     const det = win('Atributos em detalhe', 'dim', `<div class="stack">${D.ATRIBUTOS.map(a => `<div class="c-${a.cor}"><span class="t-c" style="font-size:1.3rem">${a.nome}</span> <span class="t-dim">— ${esc(a.resumo)}</span><p class="tx-s">${hl(a.usos)}</p></div>`).join('')}</div>`);
     return `<div class="grid g-main"><div>${dist}${subs}</div><div>${testes}${det}</div></div>`;
   };
@@ -367,17 +375,18 @@
   };
 
   /* ---------------- 4. CORPO ---------------- */
+  const NOME_CURTO = { cabeca: 'Cabeça', tronco: 'Tronco', bracoE: 'Braço E.', bracoD: 'Braço D.', pernaE: 'Perna E.', pernaD: 'Perna D.' };
   T.corpo = function (app) {
     const { c, d } = app;
     const parts = D.MEMBROS.map(m => {
       const x = d.membros[m.id];
       const cls = x.perdido ? 'lost' : x.atual <= 0 ? 'zero' : x.atual < x.max ? 'hurt' : '';
-      return `<div class="part ${cls}" style="grid-area:${m.id}">
-        <div class="part-h"><b>${esc(m.nome)}</b><span class="tx-s" title="${esc(x.det.join(' · '))}">${esc(m.formula)}</span></div>
-        <div class="row between"><div class="part-hp">${x.atual}<small>/${x.max}</small></div>${stepInp('vida', m.id, `vida.${m.id}`, x.atual, { aria: `Vida atual: ${m.nome}` })}</div>
+      return `<div class="part ${cls}" style="grid-area:${m.id}" role="group" aria-label="${esc(m.nome)}: ${x.atual} de ${x.max}">
+        <div class="part-h"><b><span class="pn-l">${esc(m.nome)}</span><span class="pn-c" aria-hidden="true">${esc(NOME_CURTO[m.id] || m.nome)}</span></b><span class="tx-s part-f" title="${esc(x.det.join(' · '))}">${esc(m.formula)}</span></div>
+        <div class="row between part-v"><div class="part-hp">${x.atual}<small>/${x.max}</small></div>${stepInp('vida', m.id, `vida.${m.id}`, x.atual, { aria: `Vida atual: ${m.nome}` })}</div>
         ${bar(pct(Math.max(0, x.atual), x.max), 'vig', { label: `${m.nome} ${x.atual} de ${x.max}` })}
         <div class="part-meta"><span class="arm">${x.armadura ? esc(x.armadura.nome) : 'sem armadura'}</span><span>RD ${x.rd}</span><span>DEF ${x.defesa == null ? '—' : x.defesa + '%'}</span></div>
-        <div class="row between">${chk(`perdidos.${m.id}`, x.perdido, m.id === 'cabeca' ? 'Arrancada' : 'Perdido', { cls: 'c-vig' })}${x.atual !== x.max ? btn('Restaurar', 'vida-full', { a: m.id, cls: 'btn-s btn-ok' }) : ''}</div>
+        <div class="row between part-a">${chk(`perdidos.${m.id}`, x.perdido, m.id === 'cabeca' ? 'Arrancada' : 'Perdido', { cls: 'c-vig' })}${x.atual !== x.max ? btn('Restaurar', 'vida-full', { a: m.id, cls: 'btn-s btn-ok' }) : ''}</div>
       </div>`;
     }).join('');
     const vida = win('Vida por membro', 'vig', `
@@ -534,11 +543,13 @@
     return `<div class="grid g-main"><div>${sanidade}${progresso}${status}</div><div>${faixas}${disturbios}${terapia}</div></div>`;
   };
 
+  const dado0 = d => d.dadoSanNivel;
   function nivelRow(h, idx, d) {
     const cresc = d.has('crescimento-anomalo'), clar = d.has('clareza-crescente'), epi = d.has('epifania');
     const modo = key => sel(`niveis.${idx}.${key}`, h[key], [{ v: 'max', t: '+ Máximo' }, { v: 'cura', t: 'Recupera' }], { aria: 'Como aplicar' });
-    const cel = (key, dado) => `<td><div class="row" style="flex-wrap:nowrap">${inp(`niveis.${idx}.${key}`, h[key], { t: 'intn', cls: 'in-num-s', aria: key })}${h[key] == null ? btn(dado, 'roll-nivel', { a: idx, b: key, cls: 'btn-s' }) : ''}</div></td>`;
-    return `<tr><td class="num t-yel">${h.nivel}</td>${cel('vida', '1d4')}${cresc ? cel('vidaExtra', '1d4') : ''}<td>${modo('vidaModo')}</td>${cel('san', d.dadoSanNivel)}${clar ? cel('sanExtra', '1d4') : ''}<td>${modo('sanModo')}</td>${epi ? `<td>${h.epifania ? `<span class="t-acu">${esc(h.epifania)}</span>` : btn('d100', 'roll-epifania', { a: idx, cls: 'btn-s' })}</td>` : ''}</tr>`;
+    const rot = { vida: 'Vida (1d4)', vidaExtra: 'Vida extra', san: `Sanidade (${dado0(d)})`, sanExtra: 'Sanidade extra' };
+    const cel = (key, dado) => `<td data-label="${rot[key]}"><div class="row" style="flex-wrap:nowrap">${inp(`niveis.${idx}.${key}`, h[key], { t: 'intn', cls: 'in-num-s', aria: key })}${h[key] == null ? btn(dado, 'roll-nivel', { a: idx, b: key, cls: 'btn-s' }) : ''}</div></td>`;
+    return `<tr><td class="num t-yel" data-label="Nível">${h.nivel}</td>${cel('vida', '1d4')}${cresc ? cel('vidaExtra', '1d4') : ''}<td data-label="Aplicar vida">${modo('vidaModo')}</td>${cel('san', d.dadoSanNivel)}${clar ? cel('sanExtra', '1d4') : ''}<td data-label="Aplicar sanidade">${modo('sanModo')}</td>${epi ? `<td data-label="Epifania">${h.epifania ? `<span class="t-acu">${esc(h.epifania)}</span>` : btn('d100', 'roll-epifania', { a: idx, cls: 'btn-s' })}</td>` : ''}</tr>`;
   }
   UI.nivelRow = nivelRow;
 
@@ -956,6 +967,7 @@
     o = o || {};
     return `<div class="modal-back" data-act="modal-fechar-fundo"><div class="modal c-${o.cor || 'acc'} ${o.wide ? 'modal-w' : ''}" role="dialog" aria-modal="true" aria-labelledby="modal-title">
       <h2 class="win-t" id="modal-title">${title}</h2>
+      <button type="button" class="modal-x" data-act="modal-fechar" data-fk="modal:x" aria-label="Fechar janela">&times;</button>
       ${body}
       <div class="modal-acts">${acts || btn('Fechar', 'modal-fechar')}</div>
     </div></div>`;
