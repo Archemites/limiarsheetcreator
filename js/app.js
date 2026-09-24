@@ -25,7 +25,9 @@
       rf: { attr: 'ACU', modo: 'normal', mod: '', df: '', pen: true, sit: {} },
       pct: '', expr: '2d6', exprMax: false, sanDano: '', sanRitual: false, sanCura: '', terBonus: '',
       forcaDF: '', locoM: '', contraAttr: 'ACU', usoMembro: 'tronco', conjK: '',
-      open: new Set(), lastRoll: null, cordaRoll: null, modal: null, fila: []
+      open: new Set(), lastRoll: null, cordaRoll: null, modal: null, fila: [],
+      gaveta: false,   // gaveta lateral (abas + ações), aberta pelo ícone do topo
+      pdfPronto: null  // PDF gerado esperando um toque para abrir o painel de compartilhar
     }
   });
 
@@ -185,7 +187,35 @@
     const sub = $('#brand-sub');
     if (sub) sub.innerHTML = App.c.modulo === 'passado' ? 'EM UM PASSADO DISTANTE <b>· CRIADOR DE FICHAS</b>' : '1ª EDIÇÃO · LIVRO DO JOGADOR <b>· CRIADOR DE FICHAS</b>';
     document.title = `${App.c.nome.trim() || 'Novo Perito'} · LIMIAR — Criador de Fichas`;
-    void d;
+    // rótulo da aba atual no topo (visível no celular, onde a fileira de abas some)
+    const aba = $('#aba-atual');
+    const t = UI.tabList(d).find(x => x.id === App.ui.tab);
+    if (aba && t) {
+      const pend = d.avisos.filter(a => a.nivel !== 'info').length;
+      aba.innerHTML = `<span class="kc">${t.k}</span><span class="aba-nome">${UI.esc(t.t)}</span><span class="aba-seta" aria-hidden="true">&#9662;</span>${pend ? `<span class="dot" title="${pend} pendência(s)"></span>` : ''}`;
+    }
+  }
+
+  /* Gaveta lateral */
+  function renderGaveta() {
+    const root = $('#gaveta-root');
+    if (!root) return;
+    const aberta = !!App.ui.gaveta;
+    document.documentElement.classList.toggle('gaveta-aberta', aberta);
+    document.querySelectorAll('.logo-topo, .aba-atual').forEach(b => b.setAttribute('aria-expanded', String(aberta)));
+    root.innerHTML = aberta ? UI.gaveta(App) : '';
+  }
+  function abrirGaveta() {
+    App.ui.gaveta = true;
+    renderGaveta();
+    const at = $('#gaveta .gaveta-item.on') || $('#gaveta button');
+    if (at) at.focus({ preventScroll: true });
+  }
+  function fecharGaveta(focarBotao) {
+    if (!App.ui.gaveta) return;
+    App.ui.gaveta = false;
+    renderGaveta();
+    if (focarBotao) { const b = $('.logo-topo'); if (b && b.offsetParent) b.focus({ preventScroll: true }); }
   }
 
   function render() {
@@ -197,6 +227,7 @@
     $('#view').innerHTML = UI.view(App);
     if (App.ui.tab === 'mapa' && L.Mapa) L.Mapa.montar($('#mapa-root'), App);
     renderModal();
+    renderGaveta();
     restaurarFoco(foco);
   }
 
@@ -233,6 +264,7 @@
   }
 
   function abrirModal(tipo, arg, extra) {
+    if (tipo === 'pdf' && L.PDF) L.PDF.carregar().catch(() => {}); // já deixa o jsPDF pronto: no celular o compartilhar precisa ser rápido
     App.ui.modalFocoAnterior = document.activeElement;
     App.ui.modal = Object.assign({ tipo, arg }, extra || {});
     renderModal();
@@ -242,6 +274,7 @@
   function fecharModal() {
     App.ui.modal = null;
     App.ui.cordaRoll = null;
+    App.ui.pdfPronto = null;
     render();
     const prox = App.ui.fila.shift();
     if (prox) { abrirModal(prox.tipo, prox.arg); return; }
@@ -506,14 +539,37 @@
         if (janela) janela.location.href = url; else window.open(url, '_blank');
         set('PDF aberto em outra aba.');
       } else {
-        baixar(nome, blob);
-        set(`PDF salvo: ${nome}${L.PDF.fontesOk ? '' : ' (fontes padrão: abra o site por um servidor para usar as fontes retrô)'}`);
+        // no celular abre o painel de compartilhar do sistema; no computador, baixa
+        const arquivo = new File([bytes], nome, { type: 'application/pdf' });
+        const r = await compartilharOuBaixar(arquivo, `LIMIAR · ${c.nome.trim() || 'Perito'}`, () => { App.ui.pdfPronto = arquivo; renderModal(); });
+        set(r === 'compartilhado' ? 'PDF compartilhado.' : r === 'cancelado' ? 'Compartilhamento cancelado.'
+          : r === 'pendente' ? 'PDF pronto: toque em "Compartilhar PDF".'
+            : `PDF salvo: ${nome}${L.PDF.fontesOk ? '' : ' (fontes padrão: abra o site por um servidor para usar as fontes retrô)'}`);
       }
     } catch (e) {
       console.error(e);
       if (janela) janela.close();
       set('Erro ao gerar o PDF: ' + (e && e.message ? e.message : e));
     }
+  }
+
+  /* Compartilhar (celular) ou baixar. Se o navegador exigir um toque novo (a geração demorou),
+     chama aoPedirToque para mostrar um botão "Compartilhar" com o arquivo já pronto. */
+  async function compartilharOuBaixar(arquivo, titulo, aoPedirToque) {
+    let pode = false;
+    try { pode = UI.compartilhaArquivos() && navigator.canShare({ files: [arquivo] }); } catch (e) { pode = false; }
+    if (pode) {
+      try {
+        await navigator.share({ files: [arquivo], title: titulo });
+        return 'compartilhado';
+      } catch (e) {
+        if (e && e.name === 'AbortError') return 'cancelado';
+        if (e && e.name === 'NotAllowedError' && aoPedirToque) { aoPedirToque(); return 'pendente'; }
+        console.warn('LIMIAR: compartilhar falhou, baixando.', e);
+      }
+    }
+    baixar(arquivo.name, arquivo);
+    return 'baixado';
   }
 
   /* ------------------------------------------------------------------ */
@@ -523,13 +579,34 @@
 
   const A = {
     tab(id) {
+      const vemDaGaveta = App.ui.gaveta;
       App.ui.tab = id;
       App.ui.modal = null;
+      App.ui.gaveta = false;
       render();
       const tabs = $('#tabs');
-      if (tabs && window.scrollY > tabs.offsetTop) window.scrollTo({ top: tabs.offsetTop - 6 });
+      if (UI.mobile()) window.scrollTo({ top: 0 }); // no celular a fileira de abas some: volta ao topo da nova aba
+      else if (tabs && window.scrollY > tabs.offsetTop) window.scrollTo({ top: tabs.offsetTop - 6 });
       const t = $(`#tab-${id}`);
-      if (t && document.activeElement && document.activeElement.closest && document.activeElement.closest('.modal-back')) t.focus({ preventScroll: true });
+      if (t && t.offsetParent && document.activeElement && document.activeElement.closest && document.activeElement.closest('.modal-back')) t.focus({ preventScroll: true });
+      if (vemDaGaveta) { const b = $('.aba-atual'); if (b && b.offsetParent) b.focus({ preventScroll: true }); }
+    },
+    'tab-rel'(passo) {
+      const lista = UI.tabList(App.d);
+      const i = Math.max(0, lista.findIndex(t => t.id === App.ui.tab));
+      A.tab(lista[(i + toInt(passo) + lista.length) % lista.length].id);
+    },
+    gaveta() { if (App.ui.gaveta) fecharGaveta(true); else abrirGaveta(); },
+    'gaveta-fechar'() { fecharGaveta(true); },
+    'gaveta-fechar-fundo'() { fecharGaveta(true); },
+    async 'pdf-compartilhar'() {
+      const arquivo = App.ui.pdfPronto;
+      if (!arquivo) return;
+      const r = await compartilharOuBaixar(arquivo, `LIMIAR · ${App.c.nome.trim() || 'Perito'}`, null);
+      App.ui.pdfPronto = null;
+      renderModal();
+      const el = $('#pdf-status');
+      if (el) el.textContent = r === 'compartilhado' ? 'PDF compartilhado.' : r === 'cancelado' ? 'Compartilhamento cancelado.' : `PDF salvo: ${arquivo.name}`;
     },
     avisos() { abrirModal('avisos'); },
     fichas() { abrirModal('fichas'); },
@@ -606,9 +683,10 @@
     },
     importar() { $('#file-import').click(); },
     'importar-pdf'() { $('#file-pdf').click(); },
-    'exportar-json'() {
-      baixar(`${slug(App.c.nome) || 'perito'}.limiar.json`, JSON.stringify(App.c, null, 2), 'application/json');
-      toast('Ficha exportada em JSON.');
+    async 'exportar-json'() {
+      const arquivo = new File([JSON.stringify(App.c, null, 2)], `${slug(App.c.nome) || 'perito'}.limiar.json`, { type: 'application/json' });
+      const r = await compartilharOuBaixar(arquivo, `LIMIAR · ${App.c.nome.trim() || 'Perito'}`, null);
+      toast(r === 'compartilhado' ? 'Ficha compartilhada em JSON.' : r === 'cancelado' ? 'Compartilhamento cancelado.' : 'Ficha exportada em JSON.');
     },
     'pdf-baixar'() { exportarPDF('baixar'); },
     'pdf-ver'() { exportarPDF('ver'); },
@@ -1311,7 +1389,7 @@
 
   function onChange(e) {
     const el = e.target;
-    if (el.id === 'modulo') { trocarModulo(el.value); return; }
+    if (el.id === 'modulo' || (el.dataset && el.dataset.modulo !== undefined)) { trocarModulo(el.value); return; }
     if (el.id === 'file-pdf') { const f = el.files && el.files[0]; el.value = ''; if (f) importarArquivo(f); return; }
     if (el.id === 'file-import') { const f = el.files && el.files[0]; el.value = ''; if (f) importarArquivo(f); return; }
     if (el.id === 'file-retrato') { const f = el.files && el.files[0]; el.value = ''; if (f) receberRetrato(f); return; }
@@ -1349,11 +1427,15 @@
     const el = e.target.closest('[data-act]');
     if (!el || el.disabled) return;
     const act = el.dataset.act;
-    if (act === 'modal-fechar-fundo' && e.target !== el) return;
+    if (act.endsWith('-fundo') && e.target !== el) return; // clique no fundo escuro, não no conteúdo
     const fn = A[act];
     if (!fn) return;
     e.preventDefault();
+    // ações escolhidas dentro da gaveta fecham a gaveta antes (menos o CRT, que só alterna)
+    const naGaveta = !!el.closest('#gaveta') && !act.startsWith('gaveta') && act !== 'tab';
+    if (naGaveta && act !== 'toggle-crt') { App.ui.gaveta = false; renderGaveta(); }
     fn(el.dataset.a, el.dataset.b, el, e);
+    if (naGaveta && act === 'toggle-crt') renderGaveta();
   }
 
   function onKey(e) {
@@ -1370,6 +1452,19 @@
       return;
     }
     if (e.key === 'Escape' && App.ui.modal) { e.preventDefault(); fecharModal(); return; }
+    if (App.ui.gaveta) {
+      if (e.key === 'Escape') { e.preventDefault(); fecharGaveta(true); return; }
+      if (e.key === 'Tab') { // mantém o foco dentro da gaveta
+        const foc = [...document.querySelectorAll('#gaveta button, #gaveta select')].filter(x => !x.disabled);
+        if (foc.length) {
+          const i = foc.indexOf(document.activeElement);
+          const prox = e.shiftKey ? (i <= 0 ? foc[foc.length - 1] : foc[i - 1]) : (i === -1 || i === foc.length - 1 ? foc[0] : foc[i + 1]);
+          e.preventDefault();
+          prox.focus();
+        }
+        return;
+      }
+    }
     if (e.altKey && !e.ctrlKey && /^Digit[0-9]$/.test(e.code)) {
       const k = e.code.slice(5);
       const tab = UI.tabList(App.d).find(x => x.k === k);
@@ -1480,6 +1575,12 @@
     document.addEventListener('input', onInput);
     document.addEventListener('change', onChange);
     document.addEventListener('keydown', onKey);
+    // ao cruzar a largura de celular (girar a tela, redimensionar), refaz o layout; a gaveta fecha no computador
+    if (window.matchMedia) {
+      const mq = window.matchMedia('(max-width: 760px)');
+      const trocou = () => { render(); };
+      if (mq.addEventListener) mq.addEventListener('change', trocou); else if (mq.addListener) mq.addListener(trocou);
+    }
     document.addEventListener('toggle', e => {
       const el = e.target;
       if (el && el.dataset && el.dataset.openKey) {

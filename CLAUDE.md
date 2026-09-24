@@ -40,6 +40,12 @@ Script order in `app.html` matters: `data.js`, `dice.js`, `rules.js`, `ui.js`, `
 - `mapa.js` (`L.Mapa`) — 10th tab (Alt+0): infinite pixel grid, 16 EGA colors, pencil/eraser/bucket/eyedropper/pan, undo/redo, zoom/pan by mouse and touch. Kept in 64×64 chunks; on each stroke it serializes to `c.mapa = { x, y, m: [[0,3,3], …] }` (0 = empty, 1–16 = colors; x/y = top-left of the drawn area, drawn area capped at 512×512) and calls `App.mudou()`. `app.js` calls `L.Mapa.montar(#mapa-root, App)` after every render; the same `<canvas>` is re-parented, and it reloads only when `App.c` or `App.c.mapa` identity changed.
 - `auth.js` — login/register page logic.
 
+## Mobile (≤ 760px)
+
+- The header becomes a sticky bar: the RPG icon button (`.logo-topo`, `data-act="gaveta"`) opens the side drawer (`UI.gaveta` → `#gaveta-root`, state `App.ui.gaveta`) with the 10 tabs and the top actions; `#tabs` and `.top-controls` are hidden. `#aba-atual` shows the current tab and `tab-rel` arrows step through tabs.
+- `UI.mobile()` / `UI.toque()` / `UI.compartilhaArquivos()` gate mobile-only behavior. On touch devices PDF/JSON export uses `navigator.share` with a File (`compartilharOuBaixar` in app.js); if the browser rejects for missing user activation, the PDF modal shows a "Compartilhar PDF" button holding the ready file (`App.ui.pdfPronto`). jsPDF is preloaded when the PDF modal opens.
+- Actions clicked inside the drawer close it first (see `onClick`); `*-fundo` actions only fire when the backdrop itself is clicked.
+
 ## Conventions / gotchas
 
 - `modulo` field: `'base'` or `'passado'`; the sheet keeps `profissao` and `classe` separately. Choosing one is mandatory (no "nenhuma").

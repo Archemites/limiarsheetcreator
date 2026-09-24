@@ -116,6 +116,45 @@
     { id: 'mapa', k: '0', t: 'Mapa' }
   ];
 
+  /* Dispositivo: layout de celular (até 760px) e painel de compartilhar do sistema (toque). */
+  UI.mobile = () => !!(window.matchMedia && window.matchMedia('(max-width: 760px)').matches);
+  UI.toque = () => !!((window.matchMedia && window.matchMedia('(pointer: coarse)').matches) || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || ''));
+  UI.compartilhaArquivos = () => {
+    if (!UI.toque() || !navigator.share || !navigator.canShare || typeof File === 'undefined') return false;
+    try { return navigator.canShare({ files: [new File(['%PDF'], 'teste.pdf', { type: 'application/pdf' })] }); } catch (e) { return false; }
+  };
+
+  /* Gaveta lateral: abas + ações da ficha (no celular substitui a fileira de abas e o topo). */
+  UI.gaveta = function (app) {
+    const { d } = app;
+    const u = app.usuario;
+    const abas = UI.tabList(d).map(t => {
+      const on = app.ui.tab === t.id;
+      const alerta = d.avisos.some(a => a.tab === t.id && a.nivel !== 'info');
+      return `<button type="button" class="gaveta-item${on ? ' on' : ''}" data-act="tab" data-a="${t.id}" data-fk="gav:${t.id}"${on ? ' aria-current="page"' : ''}><span class="kc">${t.k}</span>${esc(t.t)}${alerta ? '<span class="dot" title="Pendências"></span>' : ''}</button>`;
+    }).join('');
+    const acao = (rot, act, cls) => `<button type="button" class="gaveta-item gaveta-acao${cls ? ' ' + cls : ''}" data-act="${act}" data-fk="gav:${act}"><span class="gi">&rsaquo;</span>${esc(rot)}</button>`;
+    return `<div class="gaveta-back" data-act="gaveta-fechar-fundo">
+      <nav class="gaveta" id="gaveta" role="dialog" aria-modal="true" aria-label="Abas e menu">
+        <div class="gaveta-topo">
+          <img src="assets/logo-rpg-pixel.svg" alt="" width="33" height="35">
+          <div class="gaveta-tit"><b>LIMIAR</b><span>${u ? `${esc(u.login)} #${u.id}` : 'Criador de fichas'}</span></div>
+          <button type="button" class="btn btn-s" data-act="gaveta-fechar" data-fk="gav:fechar" aria-label="Fechar">&times;</button>
+        </div>
+        <div class="gaveta-sec">Abas</div>
+        ${abas}
+        <div class="gaveta-sec">Ficha</div>
+        ${acao('Fichas salvas', 'fichas')}${acao('Nova ficha', 'nova')}${acao(UI.compartilhaArquivos() ? 'Compartilhar PDF' : 'Exportar PDF', 'pdf-modal', 'gaveta-pdf')}${acao('Importar PDF', 'importar-pdf')}${acao('Menu e opções', 'menu')}
+        <div class="gaveta-sec">Extensão</div>
+        <div class="gaveta-ext"><select data-modulo aria-label="Extensão do livro">${D.MODULOS.map(m => `<option value="${m.id}"${m.id === app.c.modulo ? ' selected' : ''}>${esc(m.nome)}</option>`).join('')}</select></div>
+        <div class="gaveta-pe">
+          <button type="button" class="btn btn-s" data-act="toggle-crt" data-fk="gav:crt">${app.store.prefs.crt ? 'CRT ON' : 'CRT OFF'}</button>
+          <button type="button" class="btn btn-s btn-x" data-act="sair" data-fk="gav:sair">Sair</button>
+        </div>
+      </nav>
+    </div>`;
+  };
+
   UI.tabs = function (app) {
     const { d } = app;
     return UI.tabList(d).map(t => {
@@ -137,12 +176,12 @@
     const totalAv = erros + avs;
     return `
       <div class="hud-seg hud-id"><span class="hud-l">PERITO · ${esc(d.modulo.curto)}</span><span class="hud-name${nome ? '' : ' empty'}">${esc(nome || 'SEM NOME')}</span><span class="hud-org">${esc(org)}</span></div>
-      <div class="hud-seg"><span class="hud-l">NÍVEL</span><span class="hud-v t-yel">${c.nivel}</span></div>
-      <div class="hud-seg hud-bar"><span class="hud-l">CONHECIMENTO</span><div class="bar-row">${bar(c.conhecimento, 'yel', { label: `Conhecimento ${c.conhecimento}%` })}<span class="t-yel">${c.conhecimento}%</span></div></div>
-      <div class="hud-seg hud-bar"><span class="hud-l">SANIDADE</span><div class="bar-row">${barSan(san, { label: `Sanidade ${sanTxt}` })}<span class="${san.atual != null && san.atual <= 0 ? 't-vig blink' : 't-raz'}">${sanTxt}</span></div></div>
-      <div class="hud-seg hud-bar hide-s"><span class="hud-l">FÔLEGO</span><div class="bar-row">${bar(pct(fol.atual, fol.max), 'cyan', { label: `Fôlego ${fol.atual}/${fol.max}` })}<span class="t-cyan">${fol.atual}/${fol.max}</span></div></div>
-      <div class="hud-seg hide-s"><span class="hud-l">DEFESA</span><span class="hud-v t-psi">${d.defesa.base == null ? '—' : d.defesa.base + '%'}</span></div>
-      <div class="hud-seg"><span class="hud-l">TRAÇOS</span><span class="hud-v ${d.tracos.disponiveis > 0 ? 't-eso blink' : d.tracos.disponiveis < 0 ? 't-vig' : 't-eso'}">${d.tracos.disponiveis}</span></div>
+      <div class="hud-seg hud-nv"><span class="hud-l">NÍVEL</span><span class="hud-v t-yel">${c.nivel}</span></div>
+      <div class="hud-seg hud-bar hud-con"><span class="hud-l">CONHECIMENTO</span><div class="bar-row">${bar(c.conhecimento, 'yel', { label: `Conhecimento ${c.conhecimento}%` })}<span class="t-yel">${c.conhecimento}%</span></div></div>
+      <div class="hud-seg hud-bar hud-san"><span class="hud-l">SANIDADE</span><div class="bar-row">${barSan(san, { label: `Sanidade ${sanTxt}` })}<span class="${san.atual != null && san.atual <= 0 ? 't-vig blink' : 't-raz'}">${sanTxt}</span></div></div>
+      <div class="hud-seg hud-bar hud-fol hide-s"><span class="hud-l">FÔLEGO</span><div class="bar-row">${bar(pct(fol.atual, fol.max), 'cyan', { label: `Fôlego ${fol.atual}/${fol.max}` })}<span class="t-cyan">${fol.atual}/${fol.max}</span></div></div>
+      <div class="hud-seg hud-def hide-s"><span class="hud-l">DEFESA</span><span class="hud-v t-psi">${d.defesa.base == null ? '—' : d.defesa.base + '%'}</span></div>
+      <div class="hud-seg hud-tr"><span class="hud-l">TRAÇOS</span><span class="hud-v ${d.tracos.disponiveis > 0 ? 't-eso blink' : d.tracos.disponiveis < 0 ? 't-vig' : 't-eso'}">${d.tracos.disponiveis}</span></div>
       <div class="hud-seg hud-check hide-s"><span class="hud-l" style="margin-right:4px">MONTAGEM</span>${d.checklist.map(ck => `<button type="button" class="ck${ck.ok ? ' ok' : ''}" data-act="tab" data-a="${ck.tab}" data-fk="hudck:${ck.id}" title="${esc(`${ck.letra}. ${ck.txt}${!ck.ok && ck.det ? ' — ' + ck.det : ''}`)}">${ck.letra}</button>`).join('')}</div>
       <button type="button" class="hud-warn ${erros ? 'err' : totalAv ? '' : 'ok'}" data-act="avisos" data-fk="avisos" title="Pendências e avisos da ficha">${totalAv ? `! ${totalAv} ${totalAv === 1 ? 'AVISO' : 'AVISOS'}` : 'OK'}</button>`;
   };
@@ -216,12 +255,12 @@
       const x = d.attr[a.id];
       const mt = d.modTeste(a.id);
       return `<tr class="c-${a.cor}">
-        <td><div class="attr-name"><span class="sw"></span><div><b>${a.nome}</b><small>${esc(a.resumo)}</small></div></div></td>
+        <td><div class="attr-name"><span class="sw"></span><div><b><span class="an-l">${a.nome}</span><span class="an-c">${a.id}</span></b><small>${esc(a.resumo)}</small></div></div></td>
         <td>${step('attr-base', a.id, x.base, { decDis: x.base <= D.CRIACAO.min, incDis: x.base >= D.CRIACAO.max || pc <= 0 })}</td>
-        <td class="hide-s">${step('attr-niv', a.id, x.niv, { decDis: x.niv <= 0, incDis: pn <= 0 })}</td>
+        <td class="col-niv">${step('attr-niv', a.id, x.niv, { decDis: x.niv <= 0, incDis: pn <= 0 })}</td>
         <td class="hide-s"><span class="val ${x.prof ? 't-c' : 't-mute'}">${fmt(x.prof)}</span></td>
         <td><span class="attr-total">${fmt(x.efetivo)}</span>${x.notas.map(n => `<span class="attr-note">${esc(n)}</span>`).join('')}</td>
-        <td>${a.id === 'PSI' ? '' : btn('d20' + (mt ? fmt(mt) : ''), 'roll-attr', { a: a.id, cls: 'btn-s btn-c', title: `Teste: 1d20 ${fmt(mt)}` })}</td>
+        <td class="col-teste">${a.id === 'PSI' ? '' : btn('d20' + (mt ? fmt(mt) : ''), 'roll-attr', { a: a.id, cls: 'btn-s btn-c', title: `Teste: 1d20 ${fmt(mt)}` })}</td>
       </tr>`;
     }).join('');
     const dist = win('Distribuição de pontos', 'cyan', `
@@ -231,7 +270,7 @@
         <p class="tx-s grow" style="max-width:520px">Na criação: 5 pontos para distribuir, no máximo +10 e no mínimo -5 em cada atributo — retire pontos de um para realocar em outro. Cada nível dá +1 ponto para colocar onde quiser.</p>
       </div>
       <div class="tbl-wrap"><table class="attr-tbl">
-        <thead><tr><th>Atributo</th><th>Criação</th><th class="hide-s">Nível</th><th class="hide-s">${esc(termo)}</th><th>Total</th><th>Teste</th></tr></thead>
+        <thead><tr><th>Atributo</th><th>Criação</th><th class="col-niv">Nível</th><th class="hide-s">${esc(termo)}</th><th>Total</th><th class="col-teste">Teste</th></tr></thead>
         <tbody>${rows}</tbody>
       </table></div>
       ${penTodas.length ? `<div class="note c-vig mt">Penalidades ativas nos testes: ${esc(penTodas.join(' · '))}</div>` : ''}`);
@@ -315,10 +354,15 @@
         ${p.desc ? `<p class="tx-s">${esc(p.desc)}</p>` : ''}
         <div class="kv"><span>BÔNUS</span><span>${hl(p.bonusTexto)}</span><span>EQUIP.</span><span>${esc(equipTexto(p))}</span><span>$</span><span class="t-yel">${esc(p.dinheiro)}</span></div>
       </div>`)).join('');
-    const listaWin = win(`${d.modulo.termoPlural} ${passado ? '· Em um Passado Distante' : '· Livro do Jogador'}`, passado ? 'yel' : 'cyan', `
+    const conteudoLista = `
       ${passado ? `<p class="tx mb">${esc(D.PASSADO.classesIntro)}</p>` : `<p class="tx mb">Um Perito, assim como qualquer pessoa em nossa sociedade precisa contribuir de algum modo, ou não! Segue uma lista de Profissões para o Perito que modificam seus testes:</p>`}
       <div class="row mb"><label class="fld grow" style="max-width:420px"><span class="fld-l">Buscar</span>${uiInp('origemBusca', app.ui.origemBusca, { type: 'search', ph: 'nome, atributo, item…' })}</label><span class="tx-s">${filtrados.length} de ${lista.length}</span></div>
-      <div class="cards">${cards}</div>`);
+      <div class="cards">${cards}</div>`;
+    // No celular, depois de escolher, a lista longa fica recolhida para não poluir a tela.
+    const recolher = UI.mobile() && d.origemEscolhida;
+    const listaWin = win(`${d.modulo.termoPlural} ${passado ? '· Em um Passado Distante' : '· Livro do Jogador'}`, passado ? 'yel' : 'cyan', recolher
+      ? `<details class="troca-origem" data-open-key="origem-lista"${app.ui.open.has('origem-lista') ? ' open' : ''}><summary>Trocar de ${esc(termo.toLowerCase())} · ${lista.length} opções</summary>${conteudoLista}</details>`
+      : conteudoLista);
     return win(`${termo} selecionada`, 'acc', sel) + listaWin;
   };
 
@@ -867,7 +911,7 @@
       <div id="mapa-root" class="mapa"></div>
       <ul class="rules-mini c-acu mt">
         <li>A malha não tem fim: arraste com <em>Mover</em>, com o botão do meio ou direito do mouse, segurando <em>Espaço</em> ou com dois dedos. A roda do mouse (ou a pinça) dá zoom.</li>
-        <li>Atalhos: <em>B</em> lápis · <em>E</em> borracha · <em>G</em> balde (preenche só o que está visível) · <em>I</em> conta-gotas · <em>H</em> mover · <em>C</em> centralizar · <em>[ ]</em> troca a cor · <em>Ctrl+Z / Ctrl+Y</em> desfazer e refazer.</li>
+        <li class="so-desk">Atalhos: <em>B</em> lápis · <em>E</em> borracha · <em>G</em> balde (preenche só o que está visível) · <em>I</em> conta-gotas · <em>H</em> mover · <em>C</em> centralizar · <em>[ ]</em> troca a cor · <em>Ctrl+Z / Ctrl+Y</em> desfazer e refazer.</li>
         <li>O mapa é salvo junto com a ficha como uma matriz de números: 0 = vazio, 1 a 16 = cores da paleta.</li>
       </ul>`);
   };
@@ -926,7 +970,7 @@
         <td><div class="row" style="justify-content:flex-end">${at ? '' : btn('Abrir', 'ficha-abrir', { a: f.id, cls: 'btn-s btn-pri' })}${btn('Duplicar', 'ficha-duplicar', { a: f.id, cls: 'btn-s' })}${btn('Excluir', 'ficha-excluir', { a: f.id, cls: 'btn-s btn-x' })}</div></td></tr>`;
     }).join('');
     return UI.modal('Fichas salvas', `
-      <p class="tx-s mb">As fichas ficam salvas neste navegador (armazenamento local). Exporte em JSON para guardar ou levar a outro computador.</p>
+      <p class="tx-s mb">As fichas ficam salvas na sua conta, com uma cópia neste navegador. Exporte em JSON ou PDF para guardar um arquivo.</p>
       <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Perito</th><th>Atualizada</th><th></th></tr></thead><tbody>${linhas}</tbody></table></div>`,
       `${btn('Importar JSON', 'importar')}${btn('Importar PDF', 'importar-pdf')}${btn('Exportar esta (JSON)', 'exportar-json')}${btn('Nova ficha', 'nova')}${btn('Fechar', 'modal-fechar')}`, { wide: true });
   };
@@ -942,6 +986,8 @@
 
   UI.modalPDF = function (app) {
     const p = app.store.prefs;
+    const compartilha = UI.compartilhaArquivos();
+    const pronto = !!app.ui.pdfPronto; // PDF gerado esperando um toque para compartilhar
     const partes = [
       ['ficha', 'Ficha principal (atributos, corpo, sanidade)'],
       ['equip', 'Equipamento e habilidades'],
@@ -965,9 +1011,12 @@
           ${partes.map(([k, t]) => `<label class="chk"><input type="checkbox" data-pref="pdfPartes.${k}" ${p.pdfPartes[k] !== false ? 'checked' : ''}><span>${esc(t)}</span></label>`).join('')}
         </div>
       </div>
-      <p class="tx-s mt">"Ficha em branco" gera a mesma ficha sem dados, para preencher à mão.</p>
+      <p class="tx-s mt">"Ficha em branco" gera a mesma ficha sem dados, para preencher à mão.${compartilha ? ' No celular, o PDF abre o painel de compartilhar (WhatsApp, Drive, Arquivos…).' : ''}</p>
+      ${pronto ? '<div class="note c-acu mt">PDF pronto. Toque em "Compartilhar PDF" para enviar ou salvar.</div>' : ''}
       <div id="pdf-status" class="tx-s mt t-yel" aria-live="polite"></div>`,
-      `${btn('Ficha em branco', 'pdf-branco')}${btn('Visualizar', 'pdf-ver')}${btn('Baixar PDF', 'pdf-baixar', { cls: 'btn-pri' })}${btn('Fechar', 'modal-fechar')}`, { wide: true });
+      pronto
+        ? `${btn('Compartilhar PDF', 'pdf-compartilhar', { cls: 'btn-pri' })}${btn('Fechar', 'modal-fechar')}`
+        : `${btn('Ficha em branco', 'pdf-branco')}${compartilha ? '' : btn('Visualizar', 'pdf-ver')}${btn(compartilha ? 'Compartilhar PDF' : 'Baixar PDF', 'pdf-baixar', { cls: 'btn-pri' })}${btn('Fechar', 'modal-fechar')}`, { wide: true });
   };
 
   UI.modalAvisos = function (app) {
@@ -984,9 +1033,9 @@
         <label class="chk"><input type="checkbox" data-pref="boot" ${p.boot ? 'checked' : ''}><span>Tela de boot ao abrir</span></label>
       </div>
       <div class="win-sub mt">Atalhos</div>
-      <ul class="rules-mini"><li><em>Alt + 1…9</em> troca de aba</li><li><em>Ctrl + S</em> salva (também salva sozinho)</li><li><em>Ctrl + P</em> exportar PDF</li><li><em>Esc</em> fecha janelas</li></ul>
+      <ul class="rules-mini"><li><em>Alt + 1…0</em> troca de aba</li><li><em>Ctrl + S</em> salva (também salva sozinho)</li><li><em>Ctrl + P</em> exportar PDF</li><li><em>Esc</em> fecha janelas</li></ul>
       <div class="win-sub mt">Sobre</div>
-      <p class="tx-s">Criador de fichas para LIMIAR — Livro do Jogador, 1ª Edição, com a extensão "Em um Passado Distante". Fontes VT323 e IBM Plex Mono (SIL Open Font License). PDF gerado no navegador com jsPDF (MIT). Nada é enviado para servidores: tudo fica no seu navegador.</p>`,
+      <p class="tx-s">Criador de fichas para LIMIAR — Livro do Jogador, 1ª Edição, com a extensão "Em um Passado Distante". Fontes VT323 e IBM Plex Mono (SIL Open Font License). PDF gerado no navegador com jsPDF (MIT). As fichas ficam salvas na sua conta, com uma cópia neste navegador.</p>`,
       `${btn('Apagar TODAS as fichas', 'apagar-tudo', { cls: 'btn-x' })}${btn('Fechar', 'modal-fechar')}`);
   };
 

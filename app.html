@@ -16,10 +16,18 @@
 
   <div class="screen" id="screen">
     <header class="topbar">
-      <img class="logo-topo" src="assets/logo-rpg-pixel.svg" alt="" width="33" height="35">
+      <button type="button" class="logo-topo" data-act="gaveta" data-fk="top:gaveta" aria-label="Abrir abas e menu" aria-controls="gaveta" aria-expanded="false">
+        <img src="assets/logo-rpg-pixel.svg" alt="" width="33" height="35">
+        <span class="logo-topo-l">ABAS</span>
+      </button>
       <div class="brand">
         <h1 class="logo"><span id="logo" aria-label="LIMIAR">LIMIAR</span></h1>
         <p class="brand-sub" id="brand-sub">1ª EDIÇÃO · LIVRO DO JOGADOR <b>· CRIADOR DE FICHAS</b></p>
+        <button type="button" class="aba-atual" id="aba-atual" data-act="gaveta" data-fk="top:aba" aria-label="Aba atual: abrir a lista de abas"></button>
+      </div>
+      <div class="nav-setas" aria-label="Navegar entre as abas">
+        <button type="button" class="btn btn-s" data-act="tab-rel" data-a="-1" data-fk="top:ant" aria-label="Aba anterior">&lsaquo;</button>
+        <button type="button" class="btn btn-s" data-act="tab-rel" data-a="1" data-fk="top:prox" aria-label="Próxima aba">&rsaquo;</button>
       </div>
       <div class="top-controls">
         <label class="ext">
@@ -47,7 +55,7 @@
   </div>
 
   <footer class="statusbar">
-    <span class="fk"><b>ALT+1..9</b>ABAS</span>
+    <span class="fk"><b>ALT+1..0</b>ABAS</span>
     <span class="fk hide-s"><b>CTRL+S</b>SALVAR</span>
     <span class="fk hide-s"><b>CTRL+P</b>PDF</span>
     <span class="sp"></span>
@@ -57,6 +65,7 @@
   </footer>
 
   <div class="crt-overlay" aria-hidden="true"><div class="crt-roll"></div></div>
+  <div id="gaveta-root"></div>
   <div id="modal-root"></div>
   <div id="toast-root" class="toasts" aria-live="polite"></div>
   <input type="file" id="file-import" accept=".json,application/json,.pdf,application/pdf" hidden>
