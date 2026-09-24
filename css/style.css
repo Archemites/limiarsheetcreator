@@ -1,4 +1,4 @@
-﻿/* LIMIAR — Criador de Fichas · tema IBM PC retrô + CRT (sem vignette) */
+/* LIMIAR — Criador de Fichas · tema IBM PC retrô + CRT (sem vignette) */
 
 @font-face { font-family: 'VT323'; src: url('../assets/fonts/VT323-Regular.ttf') format('truetype'); font-display: swap; }
 @font-face { font-family: 'Plex Mono'; src: url('../assets/fonts/IBMPlexMono-Regular.ttf') format('truetype'); font-weight: 400; font-display: swap; }
@@ -677,12 +677,12 @@ html.gaveta-aberta { overflow: hidden; }
   html:not(.embutido) .troca-origem[open] > summary::before { content: '- '; }
   html:not(.embutido) .cards { grid-template-columns: minmax(0, 1fr); }
 
-  /* janelas modais e avisos ocupando a largura da tela */
-  html:not(.embutido) .modal-back { padding: 8px; }
-  html:not(.embutido) .modal { padding: 24px 12px 14px; max-height: calc(100dvh - 16px); }
-  html:not(.embutido) .modal .win-t { top: -24px; margin: -24px 0 12px -12px; }
-  html:not(.embutido) .modal-acts { justify-content: stretch; }
-  html:not(.embutido) .modal-acts .btn { flex: 1 1 auto; justify-content: center; }
+  /* janelas modais e avisos ocupando a largura da tela (inclusive embutido) */
+  .modal-back { padding: 8px; }
+  .modal { padding: 24px 12px 14px; max-height: calc(100dvh - 16px); }
+  .modal .win-t { top: -24px; margin: -24px 0 12px -12px; }
+  .modal-acts { justify-content: stretch; }
+  .modal-acts .btn { flex: 1 1 auto; justify-content: center; }
   html:not(.embutido) .toasts { left: 10px; right: 10px; top: 66px; bottom: auto; max-width: none; align-items: stretch; } /* no alto: não cobre os botões dos modais */
 
   html:not(.embutido) .so-desk { display: none; }
@@ -774,7 +774,7 @@ html, body { overscroll-behavior-x: none; } /* deslizar troca de aba; não acion
   html:not(.embutido) .chk input { width: 24px; height: 24px; }
   html:not(.embutido) .chk input:checked::after { width: 10px; height: 10px; }
   html:not(.embutido) .btn:active, html:not(.embutido) .step button:active:not(:disabled) { background: color-mix(in srgb, var(--accent) 30%, transparent); }
-  html:not(.embutido) .modal { padding-top: 30px; }
+  .modal { padding-top: 30px; }
 
   /* área segura (entalhe e barra de gestos do iPhone) */
   html:not(.embutido) .topbar { padding-top: calc(7px + env(safe-area-inset-top, 0px)); }
