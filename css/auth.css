@@ -1,0 +1,37 @@
+﻿/* LIMIAR — telas de login e cadastro (usa os tokens e o CRT de style.css). */
+.auth { min-height: 100vh; min-height: 100dvh; display: grid; place-items: center; padding: 24px 16px 56px; }
+.auth-box { width: 100%; max-width: 440px; }
+.auth-marca { display: flex; align-items: center; justify-content: center; gap: 14px; margin: 0 auto 6px; }
+.auth-marca .logo-rpg { height: 88px; margin: 0; }
+.auth-logo { display: block; flex: 1 1 auto; min-width: 0; max-width: 300px; margin: 0; }
+.auth-logo svg { display: block; width: 100%; height: auto; filter: drop-shadow(0 0 10px rgba(63, 224, 255, .25)); }
+.auth-sub { text-align: center; margin: 0 0 8px; color: var(--dim); letter-spacing: .22em; font-size: 1rem; text-transform: uppercase; }
+.auth .win { margin-top: 26px; }
+.auth-hi { margin: 4px 0 16px; font-size: 2.3rem; font-weight: 400; color: var(--yel); letter-spacing: .04em; line-height: 1.1; }
+.auth-hi .cursor { display: inline-block; width: .55em; height: .9em; margin-left: 4px; vertical-align: -.08em; background: var(--yel); animation: auth-blink 1s steps(1) infinite; }
+@keyframes auth-blink { 50% { opacity: 0; } }
+.auth form { display: flex; flex-direction: column; gap: 14px; }
+.auth input[type="text"], .auth input[type="password"] { width: 100%; font-size: 1.35rem; padding: 6px 10px; }
+.auth-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.auth-actions { display: flex; justify-content: flex-end; gap: 8px; }
+.auth-actions .btn { font-size: 1.4rem; padding: 4px 10px; }
+.auth-msg { min-height: 1.4em; margin: 0; font-size: 1.1rem; color: var(--vig); }
+.auth-msg.ok { color: var(--acu); }
+.auth-foot { margin-top: 18px; text-align: center; font-size: 1.15rem; color: var(--dim); }
+.auth-foot a { color: var(--cyan); text-decoration: none; border-bottom: 1px dashed currentColor; }
+.auth-foot a:hover, .auth-foot a:focus-visible { color: var(--ink); background: var(--cyan); border-bottom-color: transparent; outline: none; }
+.auth-bar { display: flex; gap: 0; height: 4px; margin: 18px 0 0; }
+.auth-bar span { flex: 1; }
+
+/* captcha falso */
+.captcha { display: flex; align-items: center; justify-content: space-between; gap: 12px; border: 1px solid var(--line-2); background: var(--field); padding: 10px 12px; }
+.captcha-btn { display: flex; align-items: center; gap: 12px; background: transparent; border: 0; color: var(--fg); font: inherit; font-size: 1.25rem; cursor: pointer; padding: 0; text-align: left; }
+.captcha-box { width: 28px; height: 28px; flex: 0 0 auto; border: 2px solid var(--dim); background: var(--bg); display: grid; place-items: center; }
+.captcha-btn:hover .captcha-box, .captcha-btn:focus-visible .captcha-box { border-color: var(--cyan); }
+.captcha-btn:focus-visible { outline: none; }
+.captcha-box .spin { width: 16px; height: 16px; border: 3px solid var(--cyan); border-right-color: transparent; border-radius: 50%; animation: captcha-spin .7s linear infinite; }
+@keyframes captcha-spin { to { transform: rotate(360deg); } }
+.captcha-box svg { width: 22px; height: 22px; }
+.captcha.ok .captcha-box { border-color: var(--acu); box-shadow: 0 0 10px -2px var(--acu); }
+.captcha-tag { font-size: .85rem; color: var(--mute); letter-spacing: .12em; text-align: right; line-height: 1.2; }
+@media (prefers-reduced-motion: reduce) { .auth-hi .cursor, .captcha-box .spin { animation: none; } }

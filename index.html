@@ -1,0 +1,49 @@
+﻿<!doctype html>
+<html lang="pt-BR" class="crt-on">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Entrar · LIMIAR — Criador de Fichas</title>
+  <meta name="description" content="Entre para criar e guardar suas fichas de Perito do RPG LIMIAR.">
+  <meta name="theme-color" content="#07080e">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%2307080e'/%3E%3Crect x='3' y='1.5' width='3' height='1.2' fill='%23ff4f64'/%3E%3Crect x='3' y='3.3' width='3' height='1.2' fill='%23ffae3b'/%3E%3Crect x='3' y='5.1' width='3' height='1.2' fill='%23ffe45e'/%3E%3Crect x='3' y='6.9' width='3' height='1.2' fill='%2336e08a'/%3E%3Crect x='3' y='8.7' width='3' height='1.2' fill='%233fe0ff'/%3E%3Crect x='3' y='10.5' width='10' height='1.2' fill='%235c8dff'/%3E%3Crect x='3' y='12.3' width='10' height='1.2' fill='%23e35cff'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+  <main class="auth">
+    <div class="auth-box">
+      <div class="auth-marca"><img class="logo-rpg" src="assets/logo-rpg.svg" alt="" width="99" height="105"><div class="auth-logo" id="logo" aria-label="LIMIAR"></div></div>
+      <p class="auth-sub">Criador de fichas</p>
+
+      <section class="win c-cyan">
+        <h2 class="win-t">Terminal de acesso</h2>
+        <h1 class="auth-hi">Bem vindo(a)!<span class="cursor" aria-hidden="true"></span></h1>
+        <form id="form-login" novalidate>
+          <label class="fld"><span class="fld-l">Login</span>
+            <input type="text" id="login" name="username" autocomplete="username" autocapitalize="off" spellcheck="false" required maxlength="24">
+          </label>
+          <label class="fld"><span class="fld-l">Senha</span>
+            <input type="password" id="senha" name="password" autocomplete="current-password" required maxlength="200">
+          </label>
+          <div class="auth-row">
+            <label class="chk c-acu"><input type="checkbox" id="lembrar"><span>Lembrar de mim</span></label>
+          </div>
+          <p class="auth-msg" id="msg" role="alert" aria-live="polite"></p>
+          <div class="auth-actions"><button type="submit" class="btn btn-pri" id="entrar">Entrar</button></div>
+        </form>
+        <div class="auth-bar" id="bar" aria-hidden="true"></div>
+      </section>
+
+      <p class="auth-foot">Ainda não tem conta? <a href="registrar.html">Registrar</a></p>
+    </div>
+  </main>
+
+  <div class="crt-overlay" aria-hidden="true"><div class="crt-roll"></div></div>
+
+  <script src="js/data.js"></script>
+  <script src="vendor/supabase.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>

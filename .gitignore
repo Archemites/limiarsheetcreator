@@ -1,0 +1,7 @@
+# segredos e dependências do servidor
+.env
+server/.env
+node_modules/
+
+# PDFs do livro (referência local, não vão para o repositório público)
+/*.pdf

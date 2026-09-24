@@ -1,0 +1,77 @@
+﻿<!doctype html>
+<html lang="pt-BR" class="crt-on" data-mod="base">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LIMIAR — Criador de Fichas</title>
+  <meta name="description" content="Criador de fichas de Perito para o RPG LIMIAR (Livro do Jogador, 1ª Edição) com a extensão Em um Passado Distante. Exporta a ficha em PDF.">
+  <meta name="theme-color" content="#07080e">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%2307080e'/%3E%3Crect x='3' y='1.5' width='3' height='1.2' fill='%23ff4f64'/%3E%3Crect x='3' y='3.3' width='3' height='1.2' fill='%23ffae3b'/%3E%3Crect x='3' y='5.1' width='3' height='1.2' fill='%23ffe45e'/%3E%3Crect x='3' y='6.9' width='3' height='1.2' fill='%2336e08a'/%3E%3Crect x='3' y='8.7' width='3' height='1.2' fill='%233fe0ff'/%3E%3Crect x='3' y='10.5' width='10' height='1.2' fill='%235c8dff'/%3E%3Crect x='3' y='12.3' width='10' height='1.2' fill='%23e35cff'/%3E%3C/svg%3E">
+  <link rel="preload" href="assets/fonts/VT323-Regular.ttf" as="font" type="font/ttf" crossorigin>
+  <script>/* sem sessão: volta para o login */try{if(!localStorage.getItem('limiar.auth')&&!sessionStorage.getItem('limiar.auth'))location.replace('index.html')}catch(e){}</script>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="boot" hidden><pre></pre></div>
+
+  <div class="screen" id="screen">
+    <header class="topbar">
+      <img class="logo-topo" src="assets/logo-rpg-pixel.svg" alt="" width="33" height="35">
+      <div class="brand">
+        <h1 class="logo"><span id="logo" aria-label="LIMIAR">LIMIAR</span></h1>
+        <p class="brand-sub" id="brand-sub">1ª EDIÇÃO · LIVRO DO JOGADOR <b>· CRIADOR DE FICHAS</b></p>
+      </div>
+      <div class="top-controls">
+        <label class="ext">
+          <span class="ext-l">EXTENSÃO</span>
+          <select id="modulo" aria-label="Extensão do livro">
+            <option value="base">Nenhuma — 1ª Edição</option>
+            <option value="passado">Em um Passado Distante</option>
+          </select>
+        </label>
+        <div class="top-actions">
+          <button type="button" class="btn" data-act="fichas" data-fk="top:fichas">Fichas</button>
+          <button type="button" class="btn" data-act="nova" data-fk="top:nova">Nova</button>
+          <button type="button" class="btn btn-pri" data-act="pdf-modal" data-fk="top:pdf">Exportar PDF</button>
+          <button type="button" class="btn" data-act="importar-pdf" data-fk="top:ipdf">Importar PDF</button>
+          <button type="button" class="btn" data-act="menu" data-fk="top:menu">Menu</button>
+        </div>
+      </div>
+    </header>
+
+    <section class="hud" id="hud" aria-label="Resumo do Perito"></section>
+    <nav class="tabs" id="tabs" role="tablist" aria-label="Seções da ficha"></nav>
+    <main id="view" tabindex="-1">
+      <noscript><p class="tx" style="padding:20px">Este criador de fichas precisa de JavaScript ativado.</p></noscript>
+    </main>
+  </div>
+
+  <footer class="statusbar">
+    <span class="fk"><b>ALT+1..9</b>ABAS</span>
+    <span class="fk hide-s"><b>CTRL+S</b>SALVAR</span>
+    <span class="fk hide-s"><b>CTRL+P</b>PDF</span>
+    <span class="sp"></span>
+    <span id="st-save">CARREGANDO…</span>
+    <button type="button" id="st-crt" data-act="toggle-crt" data-fk="st:crt">CRT ON</button>
+    <span id="st-clock" class="hide-s">--:--</span>
+  </footer>
+
+  <div class="crt-overlay" aria-hidden="true"><div class="crt-roll"></div></div>
+  <div id="modal-root"></div>
+  <div id="toast-root" class="toasts" aria-live="polite"></div>
+  <input type="file" id="file-import" accept=".json,application/json,.pdf,application/pdf" hidden>
+  <input type="file" id="file-pdf" accept=".pdf,application/pdf" hidden>
+  <input type="file" id="file-retrato" accept="image/*" hidden>
+
+  <script src="js/data.js"></script>
+  <script src="js/dice.js"></script>
+  <script src="js/rules.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/pdf.js"></script>
+  <script src="js/retrato.js"></script>
+  <script src="js/mapa.js"></script>
+  <script src="vendor/supabase.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
