@@ -1,4 +1,4 @@
-﻿/* LIMIAR — renderização (HTML em string). Estado e eventos ficam em app.js. */
+/* LIMIAR — renderização (HTML em string). Estado e eventos ficam em app.js. */
 (function () {
   'use strict';
   const L = (window.LIMIAR = window.LIMIAR || {});
@@ -124,7 +124,7 @@
   ];
 
   /* Dispositivo: layout de celular (até 760px) e painel de compartilhar do sistema (toque). */
-  UI.mobile = () => !document.documentElement.classList.contains('embutido') && !!(window.matchMedia && window.matchMedia('(max-width: 760px)').matches);
+  UI.mobile = () => !!(window.matchMedia && window.matchMedia('(max-width: 760px)').matches);
   UI.toque = () => !!((window.matchMedia && window.matchMedia('(pointer: coarse)').matches) || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || ''));
   UI.compartilhaArquivos = () => {
     if (!UI.toque() || !navigator.share || !navigator.canShare || typeof File === 'undefined') return false;
