@@ -564,7 +564,7 @@
       p.push(`Dano ${dano || '—'}${it.cega ? ' +VIGOR' : ''}`);
       if (it.tiros) p.push(it.tiros);
     }
-    if (it.tipo === 'armadura') p.push(`${it.parte ? D.MEMBRO[it.parte].nome : 'parte?'} · RD ${it.rd} · Defesa +${it.defesa}`);
+    if (it.tipo === 'armadura') p.push(`${it.parte ? D.MEMBRO[it.parte].nome : 'parte?'} · Defesa +${it.defesa}`);
     if (it.efeito) p.push(it.efeito);
     if (it.notas) p.push(it.notas);
     return p.join(' · ');
@@ -612,7 +612,7 @@
         ${fld('Quantidade', `itens#${it.id}.qtd`, it.qtd, { t: 'int' })}
         ${arma ? fld('Dano', `itens#${it.id}.dano`, it.dano, { ph: '1d6' }) + fld('Tiros/turno', `itens#${it.id}.tiros`, it.tiros) + `<label class="fld"><span class="fld-l">Arma cega</span>${chk(`itens#${it.id}.cega`, it.cega, '+VIGOR no dano')}</label>` : ''}
         ${it.ref === 'objeto-cenario' ? `<label class="fld"><span class="fld-l">Tamanho</span>${sel(`itens#${it.id}.tamanho`, it.tamanho, D.CATALOGO_MAP['objeto-cenario'].tamanhos.map(t => ({ v: t.id, t: `${t.nome} (${t.dano})` })))}</label>` : ''}
-        ${it.tipo === 'armadura' ? fld('RD', `itens#${it.id}.rd`, it.rd, { t: 'int' }) + fld('Defesa (+%)', `itens#${it.id}.defesa`, it.defesa, { t: 'int' }) : ''}
+        ${it.tipo === 'armadura' ? fld('Defesa (+%)', `itens#${it.id}.defesa`, it.defesa, { t: 'int' }) : ''}
         ${fld('Efeito', `itens#${it.id}.efeito`, it.efeito, { wrap: 'wide' })}
         ${fld('Notas', `itens#${it.id}.notas`, it.notas, { wrap: 'wide' })}
       </div></details>`}

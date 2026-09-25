@@ -441,7 +441,7 @@
         p.push(`Dano ${danoItem(it) || '?'}${it.cega ? ' +VIGOR' : ''}`);
         if (it.tiros) p.push(it.tiros);
       }
-      if (it.tipo === 'armadura') p.push(`${it.parte ? D.MEMBRO[it.parte].nome : 'parte?'} · RD ${it.rd} · Defesa +${it.defesa}`);
+      if (it.tipo === 'armadura') p.push(`${it.parte ? D.MEMBRO[it.parte].nome : 'parte?'} · Defesa +${it.defesa}`);
       if (it.tipo === 'escolha') p.push('à escolha');
       if (it.efeito) p.push(it.efeito);
       if (it.notas) p.push(it.notas);
