@@ -1,4 +1,4 @@
-﻿/* LIMIAR — contas e fichas na nuvem via Supabase (site 100% estático).
+/* LIMIAR — contas e fichas na nuvem via Supabase (site 100% estático).
    A chave "publishable" é pública por design: quem protege os dados são as
    regras de linha (RLS) criadas em supabase.sql — cada um só vê as próprias fichas. */
 (function () {
@@ -96,9 +96,13 @@
     },
 
     async listar() {
-      const { data, error } = await sb.from('fichas').select('ficha').eq('lixeira', 1).order('atualizado_em', { ascending: false });
-      if (error) throw falha(error);
-      return data.map(r => r.ficha);
+      let req = await sb.from('fichas').select('ficha, lixeira').order('atualizado_em', { ascending: false });
+      if (req.error) {
+        req = await sb.from('fichas').select('ficha').order('atualizado_em', { ascending: false });
+        if (req.error) throw falha(req.error);
+        return req.data.map(r => r.ficha);
+      }
+      return req.data.filter(r => r.lixeira !== 0).map(r => r.ficha);
     },
 
     async salvar(c) {
@@ -107,9 +111,13 @@
     },
 
     async excluir(id) {
-      // não apaga de verdade: manda para a lixeira (lixeira = 0 some da lista)
-      const { error } = await sb.from('fichas').update({ lixeira: 0 }).eq('id', id);
-      if (error) throw falha(error);
+      // tenta mover para a lixeira
+      const req = await sb.from('fichas').update({ lixeira: 0 }).eq('id', id);
+      if (req.error) {
+        // Se a coluna lixeira não existe, apaga de verdade
+        const req2 = await sb.from('fichas').delete().eq('id', id);
+        if (req2.error) throw falha(req2.error);
+      }
     }
   };
 })();

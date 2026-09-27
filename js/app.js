@@ -1,4 +1,4 @@
-﻿/* LIMIAR — controlador: estado, persistência, eventos e ações. */
+/* LIMIAR — controlador: estado, persistência, eventos e ações. */
 (function () {
   'use strict';
   const L = window.LIMIAR;
@@ -41,8 +41,12 @@
     try { raw = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { raw = null; }
     const store = { v: 1, ativo: null, fichas: {}, prefs: defaultPrefs() };
     const addFichas = lista => {
-      for (const f of lista) {
-        try { const c = R.normalizar(f); store.fichas[c.id] = c; } catch (e) { /* ficha corrompida: ignora */ }
+      for (let f of lista) {
+        let maxLoops = 3;
+        while (typeof f === 'string' && maxLoops-- > 0) {
+          try { f = JSON.parse(f); } catch (e) { break; }
+        }
+        try { const c = R.normalizar(f); store.fichas[c.id] = c; } catch (e) { console.error('Ficha corrompida:', f, e); /* ficha corrompida: ignora */ }
       }
     };
     if (raw && typeof raw === 'object') {
@@ -1607,7 +1611,7 @@
     if (!App.usuario) { irLogin(); return; }
     KEY = `${KEY_ANTIGA}.u${App.usuario.id}`;
     let remotas = null;
-    try { remotas = await L.API.listar(); } catch (e) { if (e.status === 401) { irLogin(); return; } remotas = null; }
+    try { remotas = await L.API.listar(); } catch (e) { console.error('Erro ao listar fichas:', e); if (e.status === 401) { irLogin(); return; } remotas = null; }
     iniciar(remotas);
     if (!remotas) statusSalvo('OFFLINE · salvo só neste navegador', true);
     const st = $('#st-save');
