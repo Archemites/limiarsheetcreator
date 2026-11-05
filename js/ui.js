@@ -119,7 +119,7 @@
     { id: 'equipamento', k: '6', t: 'Equipamento' },
     { id: 'caminhos', k: '7', t: 'Caminhos' },
     { id: 'revelacoes', k: '8', t: 'Revelações' },
-    { id: 'regras', k: '9', t: 'Regras' },
+    { id: 'livro', k: '9', t: 'Livro' },
     { id: 'mapa', k: '0', t: 'Mapa' }
   ];
 
@@ -927,7 +927,14 @@
       </ul>`);
   };
 
-  T.regras = function (app) {
+  /* ---------------- 9. LIVRO ---------------- */
+  /* A Wiki/Compêndio Oficial é montada por L.Livro (js/livro.js) dentro de #livro-root depois do render. */
+  T.livro = function () {
+    return '<div id="livro-root" class="livro-root"></div>';
+  };
+
+  T.regras = T.livro;
+  T.regrasLegado = function (app) {
     const secs = D.REGRAS.concat(app.c.modulo === 'passado' ? [D.REGRAS_PASSADO] : []);
     const q = (app.ui.rq || '').trim();
     const atual = secs.find(s => s.id === app.ui.regra) || secs[0];

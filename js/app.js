@@ -233,6 +233,8 @@
     UI.recolhidas = new Set(App.store.prefs.recolhidas || []);
     $('#view').innerHTML = UI.view(App);
     if (App.ui.tab === 'mapa' && L.Mapa) L.Mapa.montar($('#mapa-root'), App);
+    if (App.ui.tab === 'livro' && L.Livro) L.Livro.montar($('#livro-root'), App);
+    else document.documentElement.classList.remove('livro-gaveta-aberta');
     renderModal();
     renderGaveta();
     restaurarFoco(foco);
@@ -587,6 +589,7 @@
 
   const A = {
     tab(id) {
+      if (id === 'regras') id = 'livro';
       const vemDaGaveta = App.ui.gaveta;
       App.ui.tab = id;
       App.ui.modal = null;
@@ -1505,8 +1508,8 @@
   function ligarGestosCelular() {
     let toque = null;
     const ignorar = alvo => !alvo.closest('#view') ||
-      alvo.closest('input, textarea, select, .mapa, .path-tabs, .trail-tabs, .cat-tabs, [data-sem-deslize]') ||
-      (() => { const w = alvo.closest('.tbl-wrap'); return !!w && w.scrollWidth > w.clientWidth + 2; })();
+      alvo.closest('input, textarea, select, .mapa, .path-tabs, .trail-tabs, .cat-tabs, .page-toc, .livro-hud, .wiki-sidebar, [data-sem-deslize]') ||
+      (() => { const w = alvo.closest('.tbl-wrap, .table-wrap'); return !!w && w.scrollWidth > w.clientWidth + 2; })();
     document.addEventListener('touchstart', e => {
       toque = null;
       if (!UI.mobile() || App.ui.modal || App.ui.gaveta || App.ui.tab === 'mapa' || e.touches.length !== 1) return;

@@ -15,7 +15,7 @@ const APP = URL_RAIZ + '/app.html';
 const prefixo = process.argv[2] || 'mob';
 const largura = +(process.argv[3] || 390);
 const abasArg = process.argv[4] || 'todas';
-const TODAS = ['perito', 'atributos', 'origem', 'corpo', 'mente', 'equipamento', 'caminhos', 'revelacoes', 'regras', 'mapa'];
+const TODAS = ['perito', 'atributos', 'origem', 'corpo', 'mente', 'equipamento', 'caminhos', 'revelacoes', 'livro', 'mapa'];
 const abas = abasArg === 'todas' ? TODAS : abasArg === 'nenhuma' ? [] : abasArg.split(',');
 const extra = process.argv.find(a => a.startsWith('--acoes='));
 

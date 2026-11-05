@@ -1,0 +1,1687 @@
+/* ============================================================================
+   LIMIAR — Aba Livro (Wiki & Compêndio Oficial · 1ª Edição Revisada)
+   Escopado em .livro-root para conviver com o Criador de Fichas (css/style.css).
+   ============================================================================ */
+
+.livro-root {
+  --font-silk: "Silkscreen", "VT323", monospace;
+
+  --ts-ui: none;
+  --ts-tx: none;
+  --ts-ca: none;
+
+  --text-primary: var(--fg);
+  --text-secondary: #d2cfd6;
+  --text-muted: var(--dim);
+  --text-dim: var(--mute);
+  --bg-void: var(--bg);
+  --bg-surface-1: var(--panel);
+  --bg-surface-2: var(--panel-2);
+  --bg-surface-3: var(--panel-2);
+  --border-subtle: var(--line);
+  --border-strong: var(--line-2);
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+  --font-pixel: var(--font-ui);
+  --font-mono: var(--font-tx);
+  --font-display: var(--font-ui);
+
+  --color-vigor: var(--vig);
+  --color-acuidade: var(--acu);
+  --color-psicometria: var(--psi);
+  --color-esoterismo: var(--eso);
+  --color-anciao: var(--vio);
+  --color-razao: var(--raz);
+  --color-conhecimento: var(--yel);
+  --color-caminho-real: var(--yel);
+  --color-folego: var(--cyan);
+  --color-verbal: var(--vig);
+  --color-poder: var(--yel);
+  --color-impulso: var(--vio);
+
+  color: var(--fg);
+  font-family: var(--font-tx);
+  font-size: 0.9rem;
+  line-height: 1.55;
+  text-shadow: var(--ts-tx);
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+
+.crt-on .livro-root {
+  --ts-ui: var(--glow);
+  --ts-tx: var(--glow-soft);
+  --ts-ca: -1px 0 rgba(255, 30, 80, 0.45), 1px 0 rgba(30, 200, 255, 0.45), var(--glow);
+}
+
+.livro-root.pixel-mode {
+  --font-tx: var(--font-silk);
+  font-size: 0.8rem;
+}
+
+/* ---------------------------------------------------------------------------
+   RESET ESCOPADO
+   --------------------------------------------------------------------------- */
+.livro-root :where(div, span, header, nav, main, aside, footer, section, article, figure, figcaption, blockquote, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, p, pre, code, form, fieldset, legend, label, input, select, textarea, button, table, thead, tbody, tr, th, td, details, summary, dialog, search) {
+  margin: 0;
+  padding: 0;
+}
+
+.livro-root :where(img, svg, canvas, video) {
+  display: block;
+  max-inline-size: 100%;
+}
+
+.livro-root :where(button, input, select, textarea) {
+  font: inherit;
+  color: inherit;
+}
+
+.livro-root :where(ul, ol) {
+  list-style: none;
+}
+
+.livro-root strong {
+  font-weight: 700;
+  color: var(--fg);
+}
+
+.livro-root code {
+  font-family: var(--font-tx);
+  font-size: 0.95em;
+}
+
+.livro-root .icon {
+  inline-size: 1em;
+  block-size: 1em;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: square;
+}
+
+/* ---------------------------------------------------------------------------
+   BARRA DE CONTROLES DO LIVRO + HUD DE MESA + LAYOUT
+   --------------------------------------------------------------------------- */
+.livro-root .livro-topbar {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem 1rem;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--line-2);
+  background: var(--panel);
+}
+
+.livro-root .livro-menu-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px;
+  border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  background: color-mix(in srgb, var(--panel-2) 85%, transparent);
+  color: var(--accent);
+  font-family: var(--font-ui);
+  cursor: pointer;
+  box-shadow: 0 0 12px -6px var(--accent), inset 0 0 0 1px #000;
+  transition: box-shadow 0.15s, border-color 0.15s, background-color 0.15s;
+}
+
+.livro-root .livro-menu-btn img {
+  block-size: 1.6rem;
+  inline-size: auto;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 0 8px rgba(120, 200, 255, 0.3));
+}
+
+.livro-root .livro-menu-l {
+  font-size: 1.2rem;
+  line-height: 1;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-shadow: var(--ts-ui);
+}
+
+.livro-root .livro-menu-btn:hover,
+.livro-root .livro-menu-btn:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 14%, var(--panel));
+  box-shadow: 0 0 18px -4px var(--accent), inset 0 0 0 1px #000;
+}
+
+.livro-root .brand-lockup {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  cursor: pointer;
+  min-inline-size: 0;
+}
+
+.livro-root .brand-subtitle {
+  color: var(--accent);
+  font-family: var(--font-ui);
+  font-size: 1.18rem;
+  line-height: 1.1;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-shadow: var(--ts-ui);
+}
+
+.livro-root .brand-cap {
+  color: var(--fg);
+  font-family: var(--font-ui);
+  font-size: 1.02rem;
+  line-height: 1.1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.livro-root .livro-controls {
+  display: flex;
+  flex: 1 1 20rem;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  min-inline-size: 0;
+}
+
+.livro-root .header-search {
+  display: flex;
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  max-inline-size: 38rem;
+}
+
+.livro-root .search-trigger-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  inline-size: 100%;
+  min-inline-size: 0;
+  padding: 4px 6px 4px 10px;
+  border: 1px solid var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  color: var(--dim);
+  font-family: var(--font-ui);
+  font-size: 1.28rem;
+  line-height: 1.2;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  text-shadow: var(--ts-ui);
+}
+
+.livro-root .search-trigger-btn .icon {
+  color: var(--accent);
+}
+
+.livro-root .search-trigger-btn:hover,
+.livro-root .search-trigger-btn:focus-visible {
+  outline: none;
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  color: var(--fg);
+  box-shadow: 0 0 14px -3px var(--accent);
+}
+
+.livro-root .search-trigger-label {
+  flex: 1;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-align: start;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.livro-root .st-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border: 1px solid var(--line-2);
+  background: var(--field);
+  color: var(--fg);
+  font-family: var(--font-ui);
+  font-size: 1.15rem;
+  line-height: 1.1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.livro-root .st-btn::before {
+  content: "";
+  inline-size: 8px;
+  block-size: 8px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.livro-root .st-btn.is-active::before {
+  background: var(--acu);
+  box-shadow: 0 0 6px var(--acu);
+}
+
+.livro-root .st-btn:hover,
+.livro-root .st-btn:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, var(--field));
+}
+
+/* ----- HUD: resumo rápido de mesa ----- */
+.livro-root .livro-hud {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  margin-block-start: 10px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  font-family: var(--font-ui);
+}
+
+.livro-root .livro-hud .hud-seg {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  min-inline-size: 0;
+  padding: 6px 12px;
+  border-inline-end: 1px solid var(--line);
+}
+
+.livro-root .livro-hud .hud-seg:last-child {
+  border-inline-end: 0;
+}
+
+.livro-root .livro-hud .hud-id {
+  flex: none;
+}
+
+.livro-root .livro-hud .hud-name {
+  color: var(--fg);
+  font-size: 1.5rem;
+  white-space: nowrap;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-shadow: var(--ts-ui);
+}
+
+.livro-root .livro-hud .hud-l {
+  color: var(--mute);
+  font-size: 0.96rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.livro-root .livro-hud .hud-l strong {
+  color: inherit;
+  font-weight: 400;
+}
+
+.livro-root .livro-hud .hud-v {
+  color: var(--c, var(--accent));
+  font-family: var(--font-ui);
+  font-size: 1.45rem;
+  line-height: 1.1;
+  white-space: nowrap;
+  text-shadow: var(--ts-ui);
+}
+
+.livro-root .livro-hud .hud-seg:nth-child(2) { --c: var(--cyan); }
+.livro-root .livro-hud .hud-seg:nth-child(3) { --c: var(--yel); }
+.livro-root .livro-hud .hud-seg:nth-child(4) { --c: var(--vig); }
+.livro-root .livro-hud .hud-seg:nth-child(5) { --c: var(--raz); }
+.livro-root .livro-hud .hud-seg:nth-child(6) { --c: var(--eso); }
+
+/* ----- Layout em 2 colunas (sidebar + conteúdo) ----- */
+.livro-root .layout {
+  display: grid;
+  grid-template-columns: 18.5rem minmax(0, 1fr);
+  gap: 1.125rem;
+  align-items: start;
+  margin-block-start: 1rem;
+}
+
+.livro-root .wiki-sidebar {
+  position: sticky;
+  inset-block-start: 10px;
+  max-block-size: calc(100dvh - 3.5rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  padding-block-end: 10px;
+  border: 1px solid var(--line-2);
+  background: var(--panel);
+}
+
+.livro-root .wiki-sidebar-head {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 14px;
+  border-block-end: 1px solid var(--line-2);
+  background: var(--panel);
+  color: var(--accent);
+  font-family: var(--font-ui);
+  font-size: 1.35rem;
+  letter-spacing: 0.1em;
+}
+
+.livro-root .content-col {
+  min-inline-size: 0;
+}
+
+.livro-root .wiki-main {
+  view-transition-name: wiki-main;
+  counter-reset: secao;
+}
+
+/* No computador, o botão Capítulos recolhe a navegação */
+@media (min-width: 981px) {
+  html:not(.embutido) .livro-root.nav-collapsed .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  html:not(.embutido) .livro-root.nav-collapsed .wiki-sidebar {
+    display: none;
+  }
+}
+
+/* Até 980px (ou embutido) a navegação de capítulos vira gaveta */
+@media (max-width: 980px) {
+  .livro-root .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .livro-root .wiki-sidebar-head {
+    display: flex;
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 2;
+  }
+
+  .livro-root .wiki-sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 885;
+    inline-size: min(320px, 86vw);
+    block-size: 100dvh;
+    max-block-size: none;
+    padding-block: env(safe-area-inset-top, 0px) calc(12px + env(safe-area-inset-bottom, 0px));
+    border: 0;
+    border-inline-end: 4px double var(--accent);
+    box-shadow: 0 0 40px -8px var(--accent);
+    transform: translateX(-105%);
+    visibility: hidden;
+    transition: transform 0.16s steps(4), visibility 0s linear 0.16s;
+  }
+
+  .livro-root .wiki-sidebar.is-open {
+    transform: none;
+    visibility: visible;
+    transition: transform 0.16s steps(4);
+  }
+
+  .livro-root .nav-scrim {
+    position: fixed;
+    inset: 0;
+    z-index: 880;
+    background: rgba(2, 3, 8, 0.74);
+  }
+}
+
+html.embutido .livro-root .layout {
+  grid-template-columns: minmax(0, 1fr);
+}
+html.embutido .livro-root .wiki-sidebar-head {
+  display: flex;
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 2;
+}
+html.embutido .livro-root .wiki-sidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 885;
+  inline-size: min(320px, 86vw);
+  block-size: 100dvh;
+  max-block-size: none;
+  padding-block: env(safe-area-inset-top, 0px) calc(12px + env(safe-area-inset-bottom, 0px));
+  border: 0;
+  border-inline-end: 4px double var(--accent);
+  box-shadow: 0 0 40px -8px var(--accent);
+  transform: translateX(-105%);
+  visibility: hidden;
+  transition: transform 0.16s steps(4), visibility 0s linear 0.16s;
+}
+html.embutido .livro-root .wiki-sidebar.is-open {
+  transform: none;
+  visibility: visible;
+  transition: transform 0.16s steps(4);
+}
+html.embutido .livro-root .nav-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 880;
+  background: rgba(2, 3, 8, 0.74);
+}
+
+html.livro-gaveta-aberta {
+  overflow: hidden;
+}
+
+/* ---------------------------------------------------------------------------
+   COMPONENTES DA WIKI
+   --------------------------------------------------------------------------- */
+.livro-root .nav-index,
+.livro-root .toc-index,
+.livro-root .search-kbd {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  min-inline-size: 1.375rem;
+  block-size: 1.375rem;
+  padding: 0 0.25rem;
+  background: var(--dim);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 1.07rem;
+  line-height: 1;
+  letter-spacing: 0;
+  text-shadow: none;
+  box-shadow: inset -2px -2px 0 rgba(0, 0, 0, 0.35), inset 2px 2px 0 rgba(255, 255, 255, 0.35);
+}
+
+.livro-root .logo-bars svg {
+  display: block;
+  block-size: 3.6rem;
+  inline-size: auto;
+  max-inline-size: none;
+  filter: drop-shadow(0 0 6px rgba(120, 200, 255, 0.25));
+}
+
+/* ----- Navegação lateral ----- */
+.livro-root .nav-group-title {
+  padding: 14px 14px 4px;
+  color: var(--mute);
+  font-family: var(--font-ui);
+  font-size: 0.96rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.livro-root .nav-btn {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas:
+    "index label"
+    "index badge";
+  align-items: center;
+  column-gap: 10px;
+  inline-size: 100%;
+  min-block-size: 44px;
+  padding: 6px 14px 6px 11px;
+  border: 0;
+  border-inline-start: 3px solid transparent;
+  background: transparent;
+  color: var(--dim);
+  font-family: var(--font-ui);
+  font-size: 1.28rem;
+  line-height: 1.05;
+  letter-spacing: 0.03em;
+  text-align: start;
+  text-transform: uppercase;
+  cursor: pointer;
+  text-shadow: var(--ts-ui);
+}
+
+.livro-root .nav-btn .nav-index {
+  grid-area: index;
+}
+
+.livro-root .nav-label {
+  grid-area: label;
+}
+
+.livro-root .nav-btn .nav-badge {
+  grid-area: badge;
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  color: var(--mute);
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+}
+
+.livro-root .nav-btn:hover,
+.livro-root .nav-btn:focus-visible {
+  outline: none;
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  color: var(--fg);
+}
+
+.livro-root .nav-btn.is-active {
+  border-inline-start-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  color: var(--accent);
+}
+
+.livro-root .nav-btn.is-active .nav-index {
+  background: var(--accent);
+}
+
+.livro-root .nav-btn.is-active .nav-badge {
+  color: color-mix(in srgb, var(--accent) 65%, var(--dim));
+}
+
+/* ----- Abas das seções da página (page-toc) ----- */
+.livro-root .page-toc {
+  position: sticky;
+  inset-block-start: var(--topbar-sticky, 0px);
+  z-index: 40;
+  overflow-x: auto;
+  scrollbar-width: none;
+  border-block-end: 2px solid var(--line-2);
+  background: var(--bg);
+}
+
+.livro-root .page-toc::-webkit-scrollbar {
+  display: none;
+}
+
+.livro-root .page-toc:empty {
+  display: none;
+}
+
+.livro-root .toc-list {
+  display: flex;
+  gap: 2px;
+  inline-size: max-content;
+}
+
+.livro-root .toc-link {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 12px 5px;
+  border: 1px solid var(--line);
+  border-block-end: 0;
+  background: var(--panel);
+  color: var(--dim);
+  font-family: var(--font-ui);
+  font-size: 1.3rem;
+  line-height: 1.1;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-shadow: var(--ts-ui);
+}
+
+.livro-root .toc-link:hover {
+  color: var(--fg);
+}
+
+.livro-root .toc-link.is-active {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--ink);
+  text-shadow: none;
+}
+
+.livro-root .toc-link.is-active .toc-index {
+  background: var(--ink);
+  color: var(--accent);
+  box-shadow: none;
+}
+
+/* ----- Janela (borda dupla + título em etiqueta) ----- */
+.livro-root .section-hero,
+.livro-root .home-hero-main {
+  --c: var(--accent);
+  position: relative;
+  margin-block-start: 26px;
+  padding: 20px 18px 18px;
+  border: 4px double color-mix(in srgb, var(--c) 80%, transparent);
+  background: var(--panel);
+  box-shadow: 0 0 18px -8px color-mix(in srgb, var(--c) 55%, transparent);
+}
+
+.livro-root .section-kicker {
+  position: relative;
+  display: table;
+  max-inline-size: calc(100% - 3.5rem);
+  margin: calc(-20px - 0.78em) 0 14px -6px;
+  padding: 0 10px;
+  background: var(--c, var(--accent));
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 1.45rem;
+  line-height: 1.25;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-shadow: none;
+}
+
+.livro-root .section-hero[data-chapter]::after {
+  content: attr(data-chapter);
+  position: absolute;
+  inset-block-start: -14px;
+  inset-inline-end: 12px;
+  display: grid;
+  place-items: center;
+  min-inline-size: 26px;
+  block-size: 24px;
+  padding: 0 4px;
+  background: var(--c);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 1.2rem;
+  line-height: 1;
+  text-shadow: none;
+  box-shadow:
+    0 0 0 4px var(--panel),
+    inset -2px -2px 0 rgba(0, 0, 0, 0.35),
+    inset 2px 2px 0 rgba(255, 255, 255, 0.35);
+}
+
+.livro-root .section-hero {
+  margin-block-end: 18px;
+}
+
+.livro-root .home-hero-main .section-kicker {
+  font-size: 1.2rem;
+  letter-spacing: 0.06em;
+}
+
+.livro-root .section-title {
+  margin-block: 2px 10px;
+  color: var(--c, var(--accent));
+  font-family: var(--font-ui);
+  font-size: clamp(2.3rem, 4.2vw, 3.3rem);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-shadow: var(--ts-ca);
+  text-wrap: balance;
+}
+
+.livro-root .section-lead {
+  max-inline-size: 82ch;
+  color: color-mix(in srgb, var(--fg) 90%, var(--dim));
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* ----- Subtítulos ----- */
+.livro-root .sub-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-block: 34px 14px;
+  padding-block-end: 4px;
+  border-block-end: 3px double var(--line-2);
+  color: var(--accent);
+  font-family: var(--font-ui);
+  font-size: 2.1rem;
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: 0.05em;
+  text-shadow: var(--ts-ui);
+  scroll-margin-top: calc(var(--topbar-sticky, 0px) + 4.5rem);
+}
+
+.livro-root h2.sub-heading {
+  counter-increment: secao;
+}
+
+.livro-root h2.sub-heading::before {
+  content: counter(secao, decimal-leading-zero);
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  min-inline-size: 30px;
+  block-size: 26px;
+  padding: 0 4px;
+  background: var(--accent);
+  color: var(--ink);
+  font-size: 1.3rem;
+  line-height: 1;
+  text-shadow: none;
+  box-shadow: inset -2px -2px 0 rgba(0, 0, 0, 0.35), inset 2px 2px 0 rgba(255, 255, 255, 0.35);
+}
+
+.livro-root h3.sub-heading {
+  color: var(--yel);
+  font-size: 1.6rem;
+}
+
+.livro-root h3.sub-heading::before {
+  content: "\25B8";
+  color: var(--yel);
+}
+
+/* ----- Grades ----- */
+.livro-root .grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  gap: 0.875rem;
+}
+
+.livro-root .grid-3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16.25rem), 1fr));
+  gap: 0.75rem;
+}
+
+/* ----- Cartões ----- */
+.livro-root .wiki-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-inline-size: 0;
+  padding: 10px 12px 12px;
+  border: 1px solid var(--line-2);
+  background: var(--field);
+}
+
+.livro-root .wiki-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.livro-root .wiki-card-header > :first-child {
+  flex: 1 1 0%;
+  min-inline-size: 0;
+}
+
+.livro-root .wiki-card-title {
+  color: var(--accent);
+  font-family: var(--font-ui);
+  font-size: 1.7rem;
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: 0.04em;
+  text-shadow: var(--ts-ui);
+}
+
+.livro-root .card-text {
+  color: color-mix(in srgb, var(--fg) 90%, var(--dim));
+  font-size: 0.9rem;
+}
+
+.livro-root .accent-card {
+  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+  background: color-mix(in srgb, var(--accent) 6%, var(--field));
+}
+
+/* ----- Etiquetas ----- */
+.livro-root .nav-badge {
+  display: inline-block;
+  flex: 0 1 auto;
+  min-inline-size: 0;
+  padding: 0 6px;
+  border: 1px solid currentColor;
+  color: var(--dim);
+  font-family: var(--font-ui);
+  font-size: 1.07rem;
+  line-height: 1.3;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  max-inline-size: 100%;
+  overflow-wrap: anywhere;
+  text-shadow: var(--ts-ui);
+}
+
+.livro-root .attr-pill {
+  font-family: var(--font-ui);
+  font-size: 1.2em;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  text-shadow: var(--ts-ui);
+}
+
+.livro-root .wiki-card-header .attr-pill {
+  display: inline-block;
+  flex: none;
+  padding: 0 6px;
+  border: 1px solid currentColor;
+  font-size: 1.2rem;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.livro-root .attr-vigor { color: var(--vig); }
+.livro-root .attr-acuidade { color: var(--acu); }
+.livro-root .attr-psicometria { color: var(--psi); }
+.livro-root .attr-esoterismo { color: var(--eso); }
+.livro-root .attr-razao { color: var(--raz); }
+.livro-root .attr-conhecimento { color: var(--yel); }
+.livro-root .attr-folego { color: var(--cyan); }
+
+/* ----- Botões [ ASSIM ] ----- */
+.livro-root .btn-ui {
+  --bc: var(--accent);
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 5px;
+  border: 0;
+  background: transparent;
+  color: var(--bc);
+  font-family: var(--font-ui);
+  font-size: 1.35rem;
+  line-height: 1.15;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: start;
+  max-inline-size: 100%;
+  cursor: pointer;
+  text-shadow: var(--ts-ui);
+}
+
+.livro-root .btn-ui::before {
+  content: "[";
+  margin-inline-end: 3px;
+  opacity: 0.85;
+}
+
+.livro-root .btn-ui::after {
+  content: "]";
+  margin-inline-start: 3px;
+  opacity: 0.85;
+}
+
+.livro-root .btn-ui:hover:not(:disabled),
+.livro-root .btn-ui:focus-visible {
+  outline: none;
+  background: var(--bc);
+  color: var(--ink);
+  text-shadow: none;
+}
+
+.livro-root .btn-ui.is-active,
+.livro-root .btn-primary {
+  background: var(--bc);
+  color: var(--ink);
+  text-shadow: none;
+  box-shadow: 0 0 14px -2px color-mix(in srgb, var(--bc) 70%, transparent);
+}
+
+.livro-root .btn-ui.is-active:hover:not(:disabled),
+.livro-root .btn-primary:hover:not(:disabled),
+.livro-root .btn-primary:focus-visible {
+  background: var(--fg);
+  color: var(--ink);
+}
+
+/* ----- Barra de filtros e campos ----- */
+.livro-root .filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-block-end: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--line-2);
+  background: var(--panel);
+}
+
+.livro-root .filter-label {
+  color: var(--dim);
+  font-family: var(--font-ui);
+  font-size: 1.04rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.livro-root .chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.livro-root .search-field {
+  position: relative;
+  display: flex;
+  flex: 1 1 320px;
+  align-items: center;
+}
+
+.livro-root .search-field .icon {
+  position: absolute;
+  inset-inline-start: 10px;
+  color: var(--accent);
+  pointer-events: none;
+}
+
+.livro-root .input-field {
+  inline-size: 100%;
+  min-inline-size: 0;
+  padding: 3px 8px 3px 32px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: var(--field);
+  color: var(--fg);
+  font-family: var(--font-ui);
+  font-size: 1.35rem;
+  line-height: 1.25;
+  caret-color: var(--accent);
+  text-shadow: inherit;
+}
+
+.livro-root .input-field::placeholder {
+  color: var(--mute);
+  opacity: 1;
+}
+
+.livro-root .input-field:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent), 0 0 14px -3px var(--accent);
+}
+
+/* ----- Tabelas ----- */
+.livro-root .table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line-2);
+  background: var(--field);
+}
+
+.livro-root .wiki-table {
+  inline-size: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-ui);
+  font-size: 1.26rem;
+  line-height: 1.15;
+}
+
+.livro-root .wiki-table th {
+  padding: 3px 8px;
+  background: var(--line-2);
+  color: #fff;
+  font-size: 1.15rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-align: start;
+  text-transform: uppercase;
+  text-shadow: none;
+}
+
+.livro-root .wiki-table td {
+  padding: 5px 8px;
+  border-block-end: 1px dotted var(--line);
+  color: var(--fg);
+  vertical-align: top;
+  text-shadow: var(--ts-ui);
+}
+
+.livro-root .wiki-table tbody tr:last-child td {
+  border-block-end: 0;
+}
+
+.livro-root .wiki-table tbody tr:hover td {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+/* ----- Mostradores ----- */
+.livro-root .readout-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  gap: 10px;
+}
+
+.livro-root .readout {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 10px 8px;
+  border: 1px solid var(--line-2);
+  background: var(--panel);
+}
+
+.livro-root .readout-label {
+  color: var(--mute);
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.livro-root .readout-value {
+  font-family: var(--font-ui);
+  font-size: 2.5rem;
+  line-height: 1;
+  text-shadow: var(--ts-ca);
+}
+
+/* ----- Citação ----- */
+.livro-root .lore-quote {
+  max-inline-size: 80ch;
+  margin-block: 14px;
+  padding: 8px 14px;
+  border-inline-start: 3px solid var(--eso);
+  background: color-mix(in srgb, var(--eso) 5%, transparent);
+  color: var(--fg);
+  font-family: var(--font-tx);
+  font-size: 0.92rem;
+  font-style: italic;
+  line-height: 1.55;
+}
+
+.livro-root .lore-quote footer {
+  display: block;
+  margin-block-start: 4px;
+  color: var(--eso);
+  font-family: var(--font-ui);
+  font-size: 1.25rem;
+  font-style: normal;
+  letter-spacing: 0.04em;
+  text-shadow: var(--ts-ui);
+}
+
+/* ----- Busca global (janela modal) ----- */
+.livro-root .search-dialog {
+  --c: var(--accent);
+  margin: 8vh auto auto;
+  inline-size: min(760px, calc(100vw - 16px));
+  max-inline-size: none;
+  max-block-size: 82dvh;
+  padding: 26px 16px 14px;
+  overflow: visible;
+  border: 4px double var(--c);
+  background: var(--panel);
+  color: var(--fg);
+  box-shadow: 0 0 40px -10px var(--c);
+}
+
+.livro-root .search-dialog[open] {
+  display: flex;
+  flex-direction: column;
+  animation: tin 0.18s steps(3);
+}
+
+.livro-root .search-dialog::backdrop {
+  background: rgba(2, 3, 8, 0.78);
+}
+
+.crt-on .livro-root .search-dialog::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.26) 0, rgba(0, 0, 0, 0.26) 1px, transparent 1px, transparent 3px);
+  pointer-events: none;
+}
+
+.livro-root .search-dialog-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-block-end: 10px;
+}
+
+.livro-root .search-dialog-label {
+  position: absolute;
+  inset-block-start: -0.78em;
+  inset-inline-start: 12px;
+  padding: 0 10px;
+  background: var(--c);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 1.45rem;
+  line-height: 1.25;
+  letter-spacing: 0.1em;
+  text-shadow: none;
+}
+
+.livro-root .search-dialog-input {
+  flex: 1;
+  min-inline-size: 0;
+  padding: 3px 8px;
+  border: 1px solid var(--line-2);
+  background: var(--field);
+  color: var(--fg);
+  font-family: var(--font-ui);
+  font-size: 1.4rem;
+  caret-color: var(--accent);
+  outline: none;
+  text-shadow: inherit;
+}
+
+.livro-root .search-dialog-input::placeholder {
+  color: var(--mute);
+}
+
+.livro-root .search-dialog-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent), 0 0 14px -3px var(--accent);
+}
+
+.livro-root .search-results-list {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 6px;
+  min-block-size: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.livro-root .search-result-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 6px 10px 8px;
+  border: 1px solid var(--line);
+  background: var(--field);
+  color: var(--fg);
+  text-align: start;
+  cursor: pointer;
+}
+
+.livro-root .search-result-item:hover,
+.livro-root .search-result-item:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 16px -6px var(--accent);
+}
+
+.livro-root .search-result-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.livro-root .search-result-title {
+  color: var(--accent);
+  font-family: var(--font-ui);
+  font-size: 1.45rem;
+  font-weight: 400;
+  line-height: 1.05;
+  text-shadow: var(--ts-ui);
+}
+
+.livro-root .search-result-desc {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--dim);
+  font-size: 0.8rem;
+  line-height: 1.45;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.livro-root .search-empty {
+  padding: 1rem;
+  color: var(--dim);
+}
+
+/* ---------------------------------------------------------------------------
+   PÁGINAS
+   --------------------------------------------------------------------------- */
+.livro-root .home-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  grid-template-areas:
+    "main sigil"
+    "main quote";
+  gap: 18px;
+  margin-block-start: 26px;
+}
+
+.livro-root .home-hero-main {
+  grid-area: main;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-block-start: 0;
+}
+
+.livro-root .hero-logo {
+  margin-block: 6px 16px;
+  line-height: 0;
+}
+
+.livro-root .hero-logo .logo-bars svg {
+  inline-size: min(100%, 520px);
+  block-size: auto;
+}
+
+.livro-root .hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+  margin-block-start: auto;
+  padding-block-start: 18px;
+}
+
+.livro-root .home-hero-sigil {
+  grid-area: sigil;
+  position: relative;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 10px;
+  min-block-size: 240px;
+  padding: 18px;
+  overflow: hidden;
+  border: 1px solid var(--line-2);
+  background:
+    repeating-linear-gradient(45deg, rgba(92, 141, 255, 0.07) 0 6px, transparent 6px 12px),
+    var(--field);
+}
+
+.livro-root .home-hero-sigil::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.28) 0 1px, transparent 1px 3px);
+  pointer-events: none;
+}
+
+.livro-root .home-hero-sigil img {
+  inline-size: 118px;
+  block-size: auto;
+  filter: drop-shadow(0 0 10px rgba(120, 200, 255, 0.35));
+}
+
+.livro-root .home-hero-sigil figcaption {
+  color: var(--mute);
+  font-family: var(--font-ui);
+  font-size: 1.07rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.livro-root .home-hero-quote {
+  grid-area: quote;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-inline-size: none;
+  margin: 0;
+  padding: 12px 16px;
+  border: 1px solid var(--line-2);
+  border-inline-start: 3px solid var(--eso);
+  background: var(--panel);
+}
+
+.livro-root .index-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16.25rem), 1fr));
+  gap: 12px;
+}
+
+.livro-root .index-tile {
+  padding-block-end: 30px;
+  cursor: pointer;
+}
+
+.livro-root .index-tile::after {
+  content: "\25B8";
+  position: absolute;
+  inset-block-end: 4px;
+  inset-inline-end: 10px;
+  color: var(--accent);
+  font-family: var(--font-ui);
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.livro-root .index-tile:hover,
+.livro-root .index-tile:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent), 0 0 20px -6px var(--accent);
+}
+
+.livro-root .lore-body {
+  max-inline-size: 88ch;
+}
+
+.livro-root .lore-columns p,
+.livro-root .lore-coda {
+  margin-block-end: 0.8em;
+  color: color-mix(in srgb, var(--fg) 90%, var(--dim));
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.livro-root .lore-callout {
+  margin-block: 14px;
+  color: var(--vig);
+  font-family: var(--font-ui);
+  font-size: 1.6rem;
+  line-height: 1.15;
+  letter-spacing: 0.04em;
+  text-shadow: var(--ts-ui);
+}
+
+/* ===== CAMINHOS ===== */
+.livro-root .path-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-block: 4px 12px;
+}
+
+.livro-root .path-tab-btn {
+  --c: var(--path-accent, var(--accent));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 4px 12px 5px;
+  border: 1px solid var(--c);
+  background: transparent;
+  color: var(--c);
+  font-family: var(--font-ui);
+  text-align: start;
+  cursor: pointer;
+  text-shadow: var(--ts-ui);
+}
+
+.livro-root .path-tab-attr {
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  opacity: 0.85;
+}
+
+.livro-root .path-tab-name {
+  font-size: 1.5rem;
+  line-height: 1.05;
+  letter-spacing: 0.04em;
+}
+
+.livro-root .path-tab-meta {
+  color: var(--dim);
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+}
+
+.livro-root .path-tab-btn:hover,
+.livro-root .path-tab-btn:focus-visible,
+.livro-root .path-tab-btn.is-active {
+  outline: none;
+  background: var(--c);
+  color: var(--ink);
+  text-shadow: none;
+}
+
+.livro-root .path-tab-btn:hover .path-tab-meta,
+.livro-root .path-tab-btn:focus-visible .path-tab-meta,
+.livro-root .path-tab-btn.is-active .path-tab-meta {
+  color: var(--ink);
+}
+
+.livro-root .tracks-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15.6rem), 1fr));
+  gap: 0.75rem;
+}
+
+.livro-root .track-column {
+  min-inline-size: 0;
+}
+
+.livro-root .track-title {
+  margin-block-end: 8px;
+  padding-block-end: 2px;
+  border-block-end: 2px solid currentColor;
+  font-family: var(--font-ui);
+  font-size: 1.52rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-shadow: var(--ts-ui);
+}
+
+.livro-root .node-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.livro-root .node-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 7px 9px 8px;
+  border: 1px solid var(--line-2);
+  background: var(--field);
+}
+
+.livro-root .node-list > .node-card + .node-card {
+  margin-block-start: 16px;
+}
+
+.livro-root .node-list > .node-card + .node-card::before {
+  content: "";
+  position: absolute;
+  inset-block-start: -17px;
+  inset-inline-start: 22px;
+  inline-size: 2px;
+  block-size: 16px;
+  background: color-mix(in srgb, var(--path-accent, var(--accent)) 70%, var(--line-2));
+  box-shadow: 0 0 6px color-mix(in srgb, var(--path-accent, var(--accent)) 50%, transparent);
+}
+
+.livro-root .node-card:hover {
+  border-color: color-mix(in srgb, var(--path-accent, var(--accent)) 75%, transparent);
+  box-shadow: 0 0 14px -5px var(--path-accent, var(--accent));
+}
+
+.livro-root .node-card-result {
+  border-color: color-mix(in srgb, var(--path-accent) 55%, transparent);
+}
+
+.livro-root .node-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.livro-root .node-name {
+  color: var(--path-accent, var(--accent));
+  font-family: var(--font-ui);
+  font-size: 1.37rem;
+  line-height: 1.05;
+  text-shadow: var(--ts-ui);
+}
+
+.livro-root .node-meta {
+  flex: none;
+  padding: 0 5px;
+  border: 1px solid var(--yel);
+  color: var(--yel);
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  line-height: 1.3;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  text-shadow: var(--ts-ui);
+}
+
+.livro-root .node-desc {
+  color: color-mix(in srgb, var(--fg) 78%, var(--dim));
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+.livro-root .node-path {
+  font-family: var(--font-ui);
+  font-size: 1.07rem;
+  letter-spacing: 0.06em;
+}
+
+/* ---------------------------------------------------------------------------
+   UTILITÁRIOS
+   --------------------------------------------------------------------------- */
+.livro-root .text-vigor { color: var(--vig); }
+.livro-root .text-acuidade { color: var(--acu); }
+.livro-root .text-psicometria { color: var(--psi); }
+.livro-root .text-esoterismo { color: var(--eso); }
+.livro-root .text-razao { color: var(--raz); }
+.livro-root .text-conhecimento { color: var(--yel); }
+.livro-root .text-folego { color: var(--cyan); }
+.livro-root .text-muted { color: var(--dim); }
+.livro-root .font-pixel { font-family: var(--font-ui); }
+.livro-root .font-display { font-family: var(--font-ui); }
+.livro-root .font-mono { font-family: var(--font-tx); }
+.livro-root .mt-1 { margin-block-start: 0.5rem; }
+.livro-root .mt-2 { margin-block-start: 1rem; }
+.livro-root .mb-1 { margin-block-end: 0.5rem; }
+.livro-root .mb-2 { margin-block-end: 1rem; }
+
+.livro-root .wiki-main .font-pixel {
+  font-size: 1.12rem !important;
+  line-height: 1.15;
+  letter-spacing: 0.1em;
+  text-shadow: var(--ts-ui);
+}
+
+.livro-root .wiki-main [style*="--font-pixel"] {
+  font-size: 1.35rem !important;
+  text-shadow: var(--ts-ui);
+}
+
+/* ---------------------------------------------------------------------------
+   RESPONSIVO (CELULAR E TABLET)
+   --------------------------------------------------------------------------- */
+@media (max-width: 860px) {
+  .livro-root .home-hero {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "main"
+      "sigil"
+      "quote";
+  }
+
+  .livro-root .home-hero-sigil {
+    min-block-size: 200px;
+  }
+}
+
+@media (max-width: 760px) {
+  .livro-root .livro-topbar {
+    gap: 8px;
+    padding: 8px 10px;
+  }
+
+  .livro-root .brand-subtitle {
+    display: none;
+  }
+
+  .livro-root .livro-controls {
+    flex: 1 1 100%;
+    order: 3;
+  }
+
+  .livro-root .search-kbd {
+    display: none;
+  }
+
+  .livro-root .livro-hud {
+    margin-block-start: 8px;
+    scrollbar-width: none;
+  }
+
+  .livro-root .livro-hud::-webkit-scrollbar {
+    display: none;
+  }
+
+  .livro-root .livro-hud .hud-seg {
+    flex: none;
+    padding: 4px 10px;
+  }
+
+  .livro-root .livro-hud .hud-name {
+    max-inline-size: 6.5em;
+    font-size: 1.12rem;
+    line-height: 1;
+    white-space: normal;
+  }
+
+  .livro-root .livro-hud .hud-l { font-size: 0.84rem; }
+  .livro-root .livro-hud .hud-v { font-size: 1.3rem; }
+
+  .livro-root .page-toc {
+    inset-block-start: var(--topbar-h, 58px);
+  }
+
+  .livro-root .home-hero-main .section-kicker {
+    display: block;
+    max-inline-size: none;
+    margin: 0 0 8px;
+    padding: 0;
+    background: none;
+    color: var(--accent);
+    font-size: 1.1rem;
+    letter-spacing: 0.12em;
+    text-shadow: var(--ts-ui);
+  }
+
+  .livro-root .btn-ui {
+    min-block-size: 38px;
+    padding: 4px 7px;
+  }
+}
+
+html.embutido .livro-root .livro-topbar {
+  gap: 8px;
+  padding: 8px 10px;
+}
+html.embutido .livro-root .brand-subtitle {
+  display: none;
+}
+html.embutido .livro-root .livro-controls {
+  flex: 1 1 100%;
+  order: 3;
+}
+html.embutido .livro-root .search-kbd {
+  display: none;
+}
+html.embutido .livro-root .livro-hud {
+  margin-block-start: 8px;
+  scrollbar-width: none;
+}
+html.embutido .livro-root .livro-hud .hud-seg {
+  flex: none;
+  padding: 4px 10px;
+}
+html.embutido .livro-root .livro-hud .hud-name {
+  max-inline-size: 6.5em;
+  font-size: 1.12rem;
+  line-height: 1;
+  white-space: normal;
+}
+html.embutido .livro-root .page-toc {
+  inset-block-start: var(--topbar-h, 58px);
+}
+html.embutido .livro-root .home-hero-main .section-kicker {
+  display: block;
+  max-inline-size: none;
+  margin: 0 0 8px;
+  padding: 0;
+  background: none;
+  color: var(--accent);
+  font-size: 1.1rem;
+  letter-spacing: 0.12em;
+  text-shadow: var(--ts-ui);
+}
+html.embutido .livro-root .btn-ui {
+  min-block-size: 38px;
+  padding: 4px 7px;
+}
